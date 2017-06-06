@@ -2,13 +2,14 @@
 
 namespace Konekt\Acl\Test;
 
+use Konekt\Concord\ConcordServiceProvider;
 use Monolog\Handler\TestHandler;
 use Konekt\Acl\Contracts\Role;
 use Illuminate\Database\Schema\Blueprint;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Contracts\Permission;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Konekt\Acl\ModuleServiceProvider;
+use Konekt\Acl\Providers\ModuleServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -32,6 +33,9 @@ abstract class TestCase extends Orchestra
 
     public function setUp()
     {
+//        $this->app['config']->set('concord.modules', [
+//            ModuleServiceProvider::class
+//        ]);
         parent::setUp();
 
         $this->setUpDatabase($this->app);
@@ -57,7 +61,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            ModuleServiceProvider::class,
+            ConcordServiceProvider::class
         ];
     }
 
@@ -104,7 +108,7 @@ abstract class TestCase extends Orchestra
             $table->string('email');
         });
 
-        include_once __DIR__.'/../database/migrations/create_permission_tables.php.stub';
+        include_once __DIR__.'/../src/resources/database/migrations/2017_05_31_113121_create_acl_tables.php';
 
         (new \CreatePermissionTables())->up();
 

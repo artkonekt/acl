@@ -4,6 +4,7 @@ namespace Konekt\Acl\Providers;
 
 use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Models\Role;
+use Konekt\Acl\PermissionRegistrar;
 use Konekt\Concord\BaseModuleServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 use Konekt\Acl\Contracts\Role as RoleContract;
@@ -16,8 +17,19 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
         Role::class
     ];
 
-    public function boot(PermissionRegistrar $permissionLoader)
+    protected $permissionLoader;
+
+    public function __construct($app)
     {
+        parent::__construct($app);
+
+        $this->permissionLoader = $app->make(PermissionRegistrar::class);
+    }
+
+    public function boot()
+    {
+        parent::boot();
+
         $this->publishes([
             __DIR__.'/../config/permission.php' => $this->app->configPath().'/permission.php',
         ], 'config');
@@ -30,7 +42,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
             ], 'migrations');
         }
 
-        $permissionLoader->registerPermissions();
+        $this->permissionLoader->registerPermissions();
     }
 
     public function register()
