@@ -66,6 +66,6 @@ class PermissionRegistrar
 
     protected function shouldLogException(): bool
     {
-        return config('permission.log_registration_exception');
+        return config('permission.log_registration_exception', false);
     }
 }

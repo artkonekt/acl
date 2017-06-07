@@ -3,7 +3,7 @@
 namespace Konekt\Acl\Test;
 
 use Artisan;
-use Konekt\Acl\Contracts\Role;
+use Konekt\Acl\Models\RoleProxy;
 
 class BladeTest extends TestCase
 {
@@ -11,13 +11,11 @@ class BladeTest extends TestCase
     {
         parent::setUp();
 
-        $roleModel = app(Role::class);
-
-        $roleModel->create(['name' => 'member']);
-        $roleModel->create(['name' => 'writer']);
-        $roleModel->create(['name' => 'intern']);
-        $roleModel->create(['name' => 'super-admin', 'guard_name' => 'admin']);
-        $roleModel->create(['name' => 'moderator', 'guard_name' => 'admin']);
+        RoleProxy::create(['name' => 'member']);
+        RoleProxy::create(['name' => 'writer']);
+        RoleProxy::create(['name' => 'intern']);
+        RoleProxy::create(['name' => 'super-admin', 'guard_name' => 'admin']);
+        RoleProxy::create(['name' => 'moderator', 'guard_name' => 'admin']);
     }
 
     /** @test */

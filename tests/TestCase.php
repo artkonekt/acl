@@ -2,6 +2,8 @@
 
 namespace Konekt\Acl\Test;
 
+use Konekt\Acl\Models\PermissionProxy;
+use Konekt\Acl\Models\RoleProxy;
 use Konekt\Concord\ConcordServiceProvider;
 use Monolog\Handler\TestHandler;
 use Konekt\Acl\Contracts\Role;
@@ -33,9 +35,6 @@ abstract class TestCase extends Orchestra
 
     public function setUp()
     {
-//        $this->app['config']->set('concord.modules', [
-//            ModuleServiceProvider::class
-//        ]);
         parent::setUp();
 
         $this->setUpDatabase($this->app);
@@ -43,12 +42,12 @@ abstract class TestCase extends Orchestra
         $this->reloadPermissions();
 
         $this->testUser = User::first();
-        $this->testUserRole = app(Role::class)->find(1);
-        $this->testUserPermission = app(Permission::class)->find(1);
+        $this->testUserRole = RoleProxy::find(1);
+        $this->testUserPermission = PermissionProxy::find(1);
 
         $this->testAdmin = Admin::first();
-        $this->testAdminRole = app(Role::class)->find(3);
-        $this->testAdminPermission = app(Permission::class)->find(3);
+        $this->testAdminRole = RoleProxy::find(3);
+        $this->testAdminPermission = PermissionProxy::find(3);
 
         $this->clearLogTestHandler();
     }
@@ -181,5 +180,16 @@ abstract class TestCase extends Orchestra
             return $handler instanceof TestHandler
                 && $handler->hasRecordThatContains($message, $level);
         })->count() > 0;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function resolveApplicationConfiguration($app)
+    {
+        parent::resolveApplicationConfiguration($app);
+        $app['config']->set('concord.modules', [
+            ModuleServiceProvider::class
+        ]);
     }
 }

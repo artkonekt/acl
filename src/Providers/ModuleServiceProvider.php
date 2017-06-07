@@ -19,28 +19,11 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
 
     protected $permissionLoader;
 
-    public function __construct($app)
-    {
-        parent::__construct($app);
-
-        $this->permissionLoader = $app->make(PermissionRegistrar::class);
-    }
-
     public function boot()
     {
         parent::boot();
 
-        $this->publishes([
-            __DIR__.'/../config/permission.php' => $this->app->configPath().'/permission.php',
-        ], 'config');
-
-        if (! class_exists('CreatePermissionTables')) {
-            $timestamp = date('Y_m_d_His', time());
-
-            $this->publishes([
-                __DIR__.'/../database/migrations/create_permission_tables.php.stub' => $this->app->databasePath()."/migrations/{$timestamp}_create_permission_tables.php",
-            ], 'migrations');
-        }
+        $this->permissionLoader = $this->app->make(PermissionRegistrar::class);
 
         $this->permissionLoader->registerPermissions();
     }
@@ -48,11 +31,6 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
     public function register()
     {
         parent::register();
-
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/permission.php',
-            'permission'
-        );
 
         $this->registerBladeExtensions();
     }

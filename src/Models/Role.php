@@ -24,8 +24,6 @@ class Role extends Model implements RoleContract
         $attributes['guard_name'] = $attributes['guard_name'] ?? config('auth.defaults.guard');
 
         parent::__construct($attributes);
-
-        $this->setTable(config('permission.table_names.roles'));
     }
 
     public static function create(array $attributes = [])
@@ -44,10 +42,7 @@ class Role extends Model implements RoleContract
      */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(
-            config('permission.models.permission'),
-            config('permission.table_names.role_has_permissions')
-        );
+        return $this->belongsToMany(PermissionProxy::modelClass(),'role_has_permissions');
     }
 
     /**
@@ -58,7 +53,7 @@ class Role extends Model implements RoleContract
         return $this->morphedByMany(
             getModelForGuard($this->attributes['guard_name']),
             'model',
-            config('permission.table_names.model_has_roles'),
+            'model_has_roles',
             'role_id',
             'model_id'
         );

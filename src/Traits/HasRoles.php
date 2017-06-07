@@ -7,6 +7,8 @@ use Konekt\Acl\Contracts\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Konekt\Acl\Contracts\Permission;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Konekt\Acl\Models\PermissionProxy;
+use Konekt\Acl\Models\RoleProxy;
 
 trait HasRoles
 {
@@ -18,9 +20,9 @@ trait HasRoles
     public function roles(): MorphToMany
     {
         return $this->morphToMany(
-            config('permission.models.role'),
+            RoleProxy::modelClass(),
             'model',
-            config('permission.table_names.model_has_roles'),
+            'model_has_roles',
             'model_id',
             'role_id'
         );
@@ -32,9 +34,9 @@ trait HasRoles
     public function permissions(): MorphToMany
     {
         return $this->morphToMany(
-            config('permission.models.permission'),
+            PermissionProxy::modelClass(),
             'model',
-            config('permission.table_names.model_has_permissions'),
+            'model_has_permissions',
             'model_id',
             'permission_id'
         );
