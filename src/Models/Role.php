@@ -42,7 +42,7 @@ class Role extends Model implements RoleContract
      */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(PermissionProxy::modelClass(), 'role_has_permissions');
+        return $this->belongsToMany(PermissionProxy::modelClass(), 'role_permissions');
     }
 
     /**
@@ -53,7 +53,7 @@ class Role extends Model implements RoleContract
         return $this->morphedByMany(
             getModelForGuard($this->attributes['guard_name']),
             'model',
-            'model_has_roles',
+            'model_roles',
             'role_id',
             'model_id'
         );

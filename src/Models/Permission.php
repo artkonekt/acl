@@ -41,7 +41,7 @@ class Permission extends Model implements PermissionContract
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(RoleProxy::modelClass(), 'role_has_permissions');
+        return $this->belongsToMany(RoleProxy::modelClass(), 'role_permissions');
     }
 
     /**
@@ -52,7 +52,7 @@ class Permission extends Model implements PermissionContract
         return $this->morphedByMany(
             getModelForGuard($this->attributes['guard_name']),
             'model',
-            'model_has_permissions',
+            'model_permissions',
             'permission_id',
             'model_id'
         );

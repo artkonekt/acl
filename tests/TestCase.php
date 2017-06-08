@@ -107,7 +107,7 @@ abstract class TestCase extends Orchestra
 
         include_once __DIR__.'/../src/resources/database/migrations/2017_05_31_113121_create_acl_tables.php';
 
-        (new \CreatePermissionTables())->up();
+        (new \CreateAclTables())->up();
 
         User::create(['email' => 'test@user.com']);
         Admin::create(['email' => 'admin@user.com']);

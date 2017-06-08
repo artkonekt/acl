@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreatePermissionTables extends Migration
+class CreateAclTables extends Migration
 {
     /**
      * Run the migrations.
@@ -26,7 +26,7 @@ class CreatePermissionTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('model_has_permissions', function (Blueprint $table) {
+        Schema::create('model_permissions', function (Blueprint $table) {
             $table->integer('permission_id')->unsigned();
             $table->morphs('model');
 
@@ -38,7 +38,7 @@ class CreatePermissionTables extends Migration
             $table->primary(['permission_id', 'model_id', 'model_type']);
         });
 
-        Schema::create('model_has_roles', function (Blueprint $table) {
+        Schema::create('model_roles', function (Blueprint $table) {
             $table->integer('role_id')->unsigned();
             $table->morphs('model');
 
@@ -50,7 +50,7 @@ class CreatePermissionTables extends Migration
             $table->primary(['role_id', 'model_id', 'model_type']);
         });
 
-        Schema::create('role_has_permissions', function (Blueprint $table) {
+        Schema::create('role_permissions', function (Blueprint $table) {
             $table->integer('permission_id')->unsigned();
             $table->integer('role_id')->unsigned();
 
@@ -75,9 +75,9 @@ class CreatePermissionTables extends Migration
      */
     public function down()
     {
-        Schema::drop('role_has_permissions');
-        Schema::drop('model_has_roles');
-        Schema::drop('model_has_permissions');
+        Schema::drop('role_permissions');
+        Schema::drop('model_roles');
+        Schema::drop('model_permissions');
         Schema::drop('roles');
         Schema::drop('permissions');
     }

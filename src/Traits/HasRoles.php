@@ -22,7 +22,7 @@ trait HasRoles
         return $this->morphToMany(
             RoleProxy::modelClass(),
             'model',
-            'model_has_roles',
+            'model_roles',
             'model_id',
             'role_id'
         );
@@ -36,7 +36,7 @@ trait HasRoles
         return $this->morphToMany(
             PermissionProxy::modelClass(),
             'model',
-            'model_has_permissions',
+            'model_permissions',
             'model_id',
             'permission_id'
         );

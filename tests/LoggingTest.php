@@ -16,7 +16,7 @@ class LoggingTest extends TestCase
     {
         $this->app['config']->set('konekt.acl.log_registration_exception', true);
 
-        (new \CreatePermissionTables())->down();
+        (new \CreateAclTables())->down();
 
         $this->reloadPermissions();
 
@@ -28,7 +28,7 @@ class LoggingTest extends TestCase
     {
         $this->app['config']->set('konekt.acl.log_registration_exception', false);
 
-        (new \CreatePermissionTables())->down();
+        (new \CreateAclTables())->down();
 
         $this->reloadPermissions();
 
