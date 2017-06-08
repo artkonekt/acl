@@ -42,7 +42,7 @@ class Role extends Model implements RoleContract
      */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(PermissionProxy::modelClass(),'role_has_permissions');
+        return $this->belongsToMany(PermissionProxy::modelClass(), 'role_has_permissions');
     }
 
     /**
@@ -94,7 +94,7 @@ class Role extends Model implements RoleContract
     public function hasPermissionTo($permission): bool
     {
         if (is_string($permission)) {
-            $permission = app(Permission::class)->findByName($permission, $this->getDefaultGuardName());
+            $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
         }
 
         if (! $this->getGuardNames()->contains($permission->guard_name)) {

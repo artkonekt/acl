@@ -3,6 +3,7 @@
 namespace Konekt\Acl\Traits;
 
 use Illuminate\Support\Collection;
+use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Contracts\Permission;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
@@ -73,12 +74,11 @@ trait HasPermissions
     protected function getStoredPermission($permissions): Permission
     {
         if (is_string($permissions)) {
-            return app(Permission::class)->findByName($permissions, $this->getDefaultGuardName());
+            return PermissionProxy::findByName($permissions, $this->getDefaultGuardName());
         }
 
         if (is_array($permissions)) {
-            return app(Permission::class)
-                ->whereIn('name', $permissions)
+            return PermissionProxy::whereIn('name', $permissions)
                 ->whereId('guard_name', $this->getGuardNames())
                 ->get();
         }

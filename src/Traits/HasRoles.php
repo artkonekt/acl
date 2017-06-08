@@ -65,13 +65,13 @@ trait HasRoles
                 return $role;
             }
 
-            return app(Role::class)->findByName($role, $this->getDefaultGuardName());
+            return RoleProxy::findByName($role, $this->getDefaultGuardName());
         }, $roles);
 
         return $query->whereHas('roles', function ($query) use ($roles) {
             $query->where(function ($query) use ($roles) {
                 foreach ($roles as $role) {
-                    $query->orWhere(config('permission.table_names.roles').'.id', $role->id);
+                    $query->orWhere('roles.id', $role->id);
                 }
             });
         });
@@ -172,7 +172,7 @@ trait HasRoles
     /**
      * Determine if the model has all of the given role(s).
      *
-     * @param string|\Konekt\Acl\Contracts\Role|\Illuminate\Support\Collection $roles
+     * @param string|array|\Konekt\Acl\Contracts\Role|\Illuminate\Support\Collection $roles
      *
      * @return bool
      */
@@ -203,7 +203,7 @@ trait HasRoles
     public function hasPermissionTo($permission): bool
     {
         if (is_string($permission)) {
-            $permission = app(Permission::class)->findByName($permission, $this->getDefaultGuardName());
+            $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
         }
 
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
@@ -249,7 +249,7 @@ trait HasRoles
     public function hasDirectPermission($permission): bool
     {
         if (is_string($permission)) {
-            $permission = app(Permission::class)->findByName($permission, $this->getDefaultGuardName());
+            $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
 
             if (! $permission) {
                 return false;
@@ -292,7 +292,7 @@ trait HasRoles
     protected function getStoredRole($role): Role
     {
         if (is_string($role)) {
-            return app(Role::class)->findByName($role, $this->getDefaultGuardName());
+            return RoleProxy::findByName($role, $this->getDefaultGuardName());
         }
 
         return $role;

@@ -3,9 +3,9 @@
 namespace Konekt\Acl\Test;
 
 use Illuminate\Support\Facades\DB;
-use Konekt\Acl\Contracts\Role;
+use Konekt\Acl\Models\PermissionProxy;
+use Konekt\Acl\Models\RoleProxy;
 use Konekt\Acl\PermissionRegistrar;
-use Konekt\Acl\Contracts\Permission;
 
 class CacheTest extends TestCase
 {
@@ -41,7 +41,7 @@ class CacheTest extends TestCase
     /** @test */
     public function permission_creation_and_updating_should_flush_the_cache()
     {
-        $permission = app(Permission::class)->create(['name' => 'new']);
+        $permission = PermissionProxy::create(['name' => 'new']);
         $this->assertCount(1, DB::getQueryLog());
 
         $this->registrar->registerPermissions();
@@ -58,7 +58,7 @@ class CacheTest extends TestCase
     /** @test */
     public function role_creation_and_updating_should_flush_the_cache()
     {
-        $role = app(Role::class)->create(['name' => 'new']);
+        $role = RoleProxy::create(['name' => 'new']);
         $this->assertCount(2, DB::getQueryLog());
 
         $this->registrar->registerPermissions();

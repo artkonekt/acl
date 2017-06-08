@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Cache\Repository;
-use Konekt\Acl\Contracts\Permission;
+use Konekt\Acl\Models\PermissionProxy;
 
 class PermissionRegistrar
 {
@@ -59,13 +59,13 @@ class PermissionRegistrar
 
     public function getPermissions(): Collection
     {
-        return $this->cache->remember($this->cacheKey, config('permission.cache_expiration_time'), function () {
-            return app(Permission::class)->with('roles')->get();
+        return $this->cache->remember($this->cacheKey, config('konekt.acl.cache_expiration_time'), function () {
+            return PermissionProxy::with('roles')->get();
         });
     }
 
     protected function shouldLogException(): bool
     {
-        return config('permission.log_registration_exception', false);
+        return config('konekt.acl.log_registration_exception');
     }
 }

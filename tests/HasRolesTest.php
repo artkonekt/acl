@@ -2,10 +2,10 @@
 
 namespace Konekt\Acl\Test;
 
-use Konekt\Acl\Contracts\Role;
 use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Models\RoleProxy;
 
 class HasRolesTest extends TestCase
 {
@@ -210,19 +210,17 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_determine_that_a_user_has_one_of_the_given_roles()
     {
-        $roleModel = app(Role::class);
+        RoleProxy::create(['name' => 'second role']);
 
-        $roleModel->create(['name' => 'second role']);
-
-        $this->assertFalse($this->testUser->hasRole($roleModel->all()));
+        $this->assertFalse($this->testUser->hasRole(RoleProxy::all()));
 
         $this->testUser->assignRole($this->testUserRole);
 
         $this->refreshTestUser();
 
-        $this->assertTrue($this->testUser->hasRole($roleModel->all()));
+        $this->assertTrue($this->testUser->hasRole(RoleProxy::all()));
 
-        $this->assertTrue($this->testUser->hasAnyRole($roleModel->all()));
+        $this->assertTrue($this->testUser->hasAnyRole(RoleProxy::all()));
 
         $this->assertTrue($this->testUser->hasAnyRole('testRole'));
 
@@ -238,15 +236,13 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_determine_that_a_user_has_all_of_the_given_roles()
     {
-        $roleModel = app(Role::class);
-
-        $this->assertFalse($this->testUser->hasAllRoles($roleModel->first()));
+        $this->assertFalse($this->testUser->hasAllRoles(RoleProxy::first()));
 
         $this->assertFalse($this->testUser->hasAllRoles('testRole'));
 
-        $this->assertFalse($this->testUser->hasAllRoles($roleModel->all()));
+        $this->assertFalse($this->testUser->hasAllRoles(RoleProxy::all()));
 
-        $roleModel->create(['name' => 'second role']);
+        RoleProxy::create(['name' => 'second role']);
 
         $this->testUser->assignRole($this->testUserRole);
 
@@ -356,8 +352,7 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_list_all_the_permissions_via_his_roles()
     {
-        $roleModel = app(Role::class);
-        $roleModel->findByName('testRole2')->givePermissionTo('edit-news');
+        RoleProxy::findByName('testRole2')->givePermissionTo('edit-news');
 
         $this->testUserRole->givePermissionTo('edit-articles');
         $this->testUser->assignRole('testRole', 'testRole2');

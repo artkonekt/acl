@@ -7,6 +7,8 @@ use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\RoleAlreadyExists;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Models\PermissionProxy;
+use Konekt\Acl\Models\RoleProxy;
 
 class RoleTest extends TestCase
 {
@@ -36,8 +38,8 @@ class RoleTest extends TestCase
     {
         $this->expectException(RoleAlreadyExists::class);
 
-        app(Role::class)->create(['name' => 'test-role']);
-        app(Role::class)->create(['name' => 'test-role']);
+        RoleProxy::create(['name' => 'test-role']);
+        RoleProxy::create(['name' => 'test-role']);
     }
 
     /** @test */
@@ -175,7 +177,7 @@ class RoleTest extends TestCase
     /** @test */
     public function it_returns_false_if_it_does_not_have_a_permission_object()
     {
-        $permission = app(Permission::class)->findByName('other-permission');
+        $permission = PermissionProxy::findByName('other-permission');
 
         $this->assertFalse($this->testUserRole->hasPermissionTo($permission));
     }
@@ -185,7 +187,7 @@ class RoleTest extends TestCase
     {
         $this->expectException(GuardDoesNotMatch::class);
 
-        $permission = app(Permission::class)->findByName('wrong-guard-permission', 'admin');
+        $permission = PermissionProxy::findByName('wrong-guard-permission', 'admin');
 
         $this->testUserRole->hasPermissionTo($permission);
     }
@@ -193,7 +195,7 @@ class RoleTest extends TestCase
     /** @test */
     public function it_belongs_to_a_guard()
     {
-        $role = app(Role::class)->create(['name' => 'admin', 'guard_name' => 'admin']);
+        $role = RoleProxy::create(['name' => 'admin', 'guard_name' => 'admin']);
 
         $this->assertEquals('admin', $role->guard_name);
     }

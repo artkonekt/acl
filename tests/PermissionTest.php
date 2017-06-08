@@ -2,8 +2,8 @@
 
 namespace Konekt\Acl\Test;
 
-use Konekt\Acl\Contracts\Permission;
 use Konekt\Acl\Exceptions\PermissionAlreadyExists;
+use Konekt\Acl\Models\PermissionProxy;
 
 class PermissionTest extends TestCase
 {
@@ -12,14 +12,14 @@ class PermissionTest extends TestCase
     {
         $this->expectException(PermissionAlreadyExists::class);
 
-        app(Permission::class)->create(['name' => 'test-permission']);
-        app(Permission::class)->create(['name' => 'test-permission']);
+        PermissionProxy::create(['name' => 'test-permission']);
+        PermissionProxy::create(['name' => 'test-permission']);
     }
 
     /** @test */
     public function it_belongs_to_a_guard()
     {
-        $permission = app(Permission::class)->create(['name' => 'can-edit', 'guard_name' => 'admin']);
+        $permission = PermissionProxy::create(['name' => 'can-edit', 'guard_name' => 'admin']);
 
         $this->assertEquals('admin', $permission->guard_name);
     }

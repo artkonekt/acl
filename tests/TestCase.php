@@ -4,14 +4,12 @@ namespace Konekt\Acl\Test;
 
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\Models\RoleProxy;
+use Konekt\Acl\PermissionRegistrar;
+use Konekt\Acl\Providers\ModuleServiceProvider;
 use Konekt\Concord\ConcordServiceProvider;
 use Monolog\Handler\TestHandler;
-use Konekt\Acl\Contracts\Role;
 use Illuminate\Database\Schema\Blueprint;
-use Konekt\Acl\PermissionRegistrar;
-use Konekt\Acl\Contracts\Permission;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Konekt\Acl\Providers\ModuleServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -113,12 +111,12 @@ abstract class TestCase extends Orchestra
 
         User::create(['email' => 'test@user.com']);
         Admin::create(['email' => 'admin@user.com']);
-        $app[Role::class]->create(['name' => 'testRole']);
-        $app[Role::class]->create(['name' => 'testRole2']);
-        $app[Role::class]->create(['name' => 'testAdminRole', 'guard_name' => 'admin']);
-        $app[Permission::class]->create(['name' => 'edit-articles']);
-        $app[Permission::class]->create(['name' => 'edit-news']);
-        $app[Permission::class]->create(['name' => 'admin-permission', 'guard_name' => 'admin']);
+        RoleProxy::create(['name' => 'testRole']);
+        RoleProxy::create(['name' => 'testRole2']);
+        RoleProxy::create(['name' => 'testAdminRole', 'guard_name' => 'admin']);
+        PermissionProxy::create(['name' => 'edit-articles']);
+        PermissionProxy::create(['name' => 'edit-news']);
+        PermissionProxy::create(['name' => 'admin-permission', 'guard_name' => 'admin']);
     }
 
     /**
