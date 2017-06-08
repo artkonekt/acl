@@ -1,6 +1,7 @@
 # Concord (Laravel) Module For Handling Permissions And Roles
 
 > This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission). Reason for fork was to convert the package into a [Concord compliant](https://github.com/artkonekt/concord) module.
+> Changes have also been synced with Spatie versions: 2.1.6
 
 [![Latest Stable Version](https://poser.pugx.org/konekt/acl/version.png)](https://packagist.org/packages/konekt/acl)
 [![Total Downloads](https://poser.pugx.org/konekt/acl/downloads.png)](https://packagist.org/packages/konekt/acl)
@@ -49,10 +50,10 @@ You can install the package via composer:
 composer require konekt/acl
 ```
 
-Now add the service provider in `config/app.php` file:
+Now add the module in `config/concord.php` file:
 
 ```php
-'providers' => [
+'modules' => [
     // ...
     Konekt\Acl\Providers\ModuleServiceProvider::class,
 ];
@@ -64,103 +65,77 @@ The package contains some migrations that you can run as usual by:
 php artisan migrate
 ```
 
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --provider="Konekt\Acl\PermissionServiceProvider" --tag="config"
-```
-
-This is the contents of the published `config/permission.php` config file:
+You can modify the configuration within `app/concord.php`:
 
 ```php
 return [
-
-    'models' => [
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * Eloquent model should be used to retrieve your permissions. Of course, it
-         * is often just the "Permission" model but you may use whatever you like.
-         *
-         * The model you want to use as a Permission model needs to implement the
-         * `Konekt\Acl\Contracts\Permission` contract.
-         */
-
-        'permission' => Konekt\Acl\Models\Permission::class,
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * Eloquent model should be used to retrieve your roles. Of course, it
-         * is often just the "Role" model but you may use whatever you like.
-         *
-         * The model you want to use as a Role model needs to implement the
-         * `Konekt\Acl\Contracts\Role` contract.
-         */
-
-        'role' => Konekt\Acl\Models\Role::class,
-
-    ],
-
-    'table_names' => [
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * table should be used to retrieve your roles. We have chosen a basic
-         * default value but you may easily change it to any table you like.
-         */
-
-        'roles' => 'roles',
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * table should be used to retrieve your permissions. We have chosen a basic
-         * default value but you may easily change it to any table you like.
-         */
-
-        'permissions' => 'permissions',
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * table should be used to retrieve your models permissions. We have chosen a
-         * basic default value but you may easily change it to any table you like.
-         */
-
-        'model_has_permissions' => 'model_has_permissions',
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * table should be used to retrieve your models roles. We have chosen a
-         * basic default value but you may easily change it to any table you like.
-         */
-
-        'model_has_roles' => 'model_has_roles',
-
-        /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * table should be used to retrieve your roles permissions. We have chosen a
-         * basic default value but you may easily change it to any table you like.
-         */
-
-        'role_has_permissions' => 'role_has_permissions',
-    ],
-
-    /*
-     * By default all permissions will be cached for 24 hours unless a permission or
-     * role is updated. Then the cache will be flushed immediately.
-     */
-     
-    'cache_expiration_time' => 60 * 24,
-
-    /*
-     * By default we'll make an entry in the application log when the permissions
-     * could not be loaded. Normally this only occurs while installing the packages.
-     *
-     * If for some reason you want to disable that logging, set this value to false.
-     */
-
-    'log_registration_exception' => true,
+    'modules' => [
+        // ...
+        Konekt\Acl\Providers\ModuleServiceProvider::class => [
+            /*
+             * By default all permissions will be cached for 24 hours unless a permission or
+             * role is updated. Then the cache will be flushed immediately.
+             */
+             
+            'cache_expiration_time' => 60 * 24,
+        
+            /*
+             * By default we'll make an entry in the application log when the permissions
+             * could not be loaded. Normally this only occurs while installing the packages.
+             *
+             * If for some reason you want to disable that logging, set this value to false.
+             */
+        
+            'log_registration_exception' => true
+            
+        ]
+    ]
 ];
 ```
+
+The main difference between this fork and the original Spatie version is
+that models are managed via Concord's [model proxies feature](https://github.com/artkonekt/concord/blob/master/docs/models.md#concords-solution).
+
+Thus Model classes and table names have been removed from config and have
+been added as Concord models. Thus you can easily replace them in your
+using Concord's facilities:
+
+```php
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Konekt\Acl\Contracts\Role as RoleContract;
+use Konekt\Acl\Contracts\Permission as PermissionContract;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        // To override the role model
+        $this->app->concord->registerModel(RoleContract::class, \App\Role::class);
+        // To override the Permission model
+        $this->app->concord->registerModel(PermissionContract::class, \App\Permission::class);
+    }
+}
+```
+
+If you also want to change the names of the db tables, set the `$table`
+property of the model:
+
+```php
+namespace App;
+
+use Konekt\Acl\Models\Role as BaseRole;
+
+class Role extends BaseRole
+{
+    protected $table = 'my_roles_table_name';
+}
+```
+
+> *Important*: Make sure any custom model class implements its
+> appropriate interface (`Konekt\Acl\Contracts\Role`,
+> `Konekt\Acl\Contracts\Permission`)
 
 ## Usage
 
@@ -187,6 +162,17 @@ use Konekt\Acl\Models\Permission;
 
 $role = Role::create(['name' => 'writer']);
 $permission = Permission::create(['name' => 'edit articles']);
+```
+
+If you want to use your own models instead of the built in ones, use
+their proxy counterparts instead:
+
+```php
+use Konekt\Acl\Models\RoleProxy;
+use Konekt\Acl\Models\PermissionProxy;
+
+$role = RoleProxy::create(['name' => 'writer']);
+$permission = PermissionProxy::create(['name' => 'edit articles']);
 ```
 
 If you're using multiple guards the `guard_name` attribute needs to be set as well. Read about it in the [using multiple guards](#using-multiple-guards) section of the readme.
@@ -273,7 +259,7 @@ $user->hasRole('writer');
 You can also determine if a user has any of a given list of roles:
 
 ```php
-$user->hasAnyRole(Role::all());
+$user->hasAnyRole(RoleProxy::all());
 ```
 
 You can also determine if a user has all of a given list of roles:
@@ -395,13 +381,13 @@ By default the default guard (`auth.default.guard`) will be used as the guard fo
 
 ```php
 // Create a superadmin role for the admin users
-$role = Role::create(['guard_name' => 'admin', 'name' => 'superadmin']);
+$role = RoleProxy::create(['guard_name' => 'admin', 'name' => 'superadmin']);
 
 // Define a `create posts` permission for the admin users beloninging to the admin guard
-$permission = Permission::create(['guard_name' => 'admin', 'name' => 'create posts']);
+$permission = PermissionProxy::create(['guard_name' => 'admin', 'name' => 'create posts']);
 
 // Define a different `create posts` permission for the regular users belonging to the web guard
-$permission = Permission::create(['guard_name' => 'web', 'name' => 'create posts']);
+$permission = PermissionProxy::create(['guard_name' => 'web', 'name' => 'create posts']);
 ```
 
 This is how you can check if a user has permission for a specific guard:
@@ -486,11 +472,10 @@ keep the following things in mind:
 
 - Your `Role` model needs to implement the `Konekt\Acl\Contracts\Role` contract
 - Your `Permission` model needs to implement the `Konekt\Acl\Contracts\Permission` contract
-- You must publish the configuration with this command:
-  ```bash
-  $ php artisan vendor:publish --provider="Konekt\Acl\PermissionServiceProvider" --tag="config"
-  ```
-  And update the `models.role` and `models.permission` values
+- In you app service provider invoke:
+    ```php
+        $this->app->concord->registerModel(Konekt\Acl\Contracts\Role::class, \App\Role::class);
+    ```
 
 ## Troubleshooting
 
@@ -500,7 +485,7 @@ If you manipulate permission/role data directly in the database instead of calli
 
 To manually reset the cache for this package, run:
 ```bash
-php artisan cache:forget spatie.permission.cache
+php artisan cache:forget konekt.acl.cache
 ```
 
 When you use the supplied methods, such as the following, the cache is automatically reset for you:
@@ -516,7 +501,7 @@ $role->revokePermissionTo('edit articles');
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+Please see [Changelog](Changelog.md) for more information what has changed recently.
 
 ## Testing
 
@@ -528,12 +513,10 @@ composer test
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-## Security
-
-If you discover any security related issues, please email [freek@spatie.be](mailto:freek@spatie.be) instead of using the issue tracker.
 
 ## Credits
 
+- [Attila Fulop](https://github.com/fulopattila122)
 - [Freek Van der Herten](https://github.com/freekmurze)
 - [All Contributors](../../contributors)
 
