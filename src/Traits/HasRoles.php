@@ -197,13 +197,17 @@ trait HasRoles
      * Determine if the model may perform the given permission.
      *
      * @param string|\Konekt\Acl\Contracts\Permission $permission
+     * @param string|null $guardName
      *
      * @return bool
      */
-    public function hasPermissionTo($permission): bool
+    public function hasPermissionTo($permission, $guardName = null): bool
     {
         if (is_string($permission)) {
-            $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
+            $permission = PermissionProxy::findByName(
+                $permission,
+                $guardName ?? $this->getDefaultGuardName()
+            );
         }
 
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
