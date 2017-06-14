@@ -21,7 +21,7 @@ class PermissionRegistrar
     protected $logger;
 
     /** @var string */
-    protected $cacheKey = 'spatie.permission.cache';
+    protected $cacheKey = 'konekt.acl.cache';
 
     public function __construct(Gate $gate, Repository $cache, Log $logger)
     {
