@@ -140,6 +140,23 @@ class HasRolesTest extends TestCase
     }
 
     /** @test */
+    public function it_deletes_pivot_table_entries_when_deleting_models()
+    {
+        $user = User::create(['email' => 'user@test.com']);
+
+        $user->assignRole('testRole');
+        $user->givePermissionTo('edit-articles');
+
+        $this->assertDatabaseHas('model_permissions', ['model_id' => $user->id]);
+        $this->assertDatabaseHas('model_roles', ['model_id' => $user->id]);
+
+        $user->delete();
+
+        $this->assertDatabaseMissing('model_permissions', ['model_id' => $user->id]);
+        $this->assertDatabaseMissing('model_roles', ['model_id' => $user->id]);
+    }
+
+    /** @test */
     public function it_can_scope_users_using_a_string()
     {
         $user1 = User::create(['email' => 'user1@test.com']);
@@ -231,6 +248,8 @@ class HasRolesTest extends TestCase
         $this->assertTrue($this->testUser->hasAnyRole(['testRole', 'role does not exist']));
 
         $this->assertFalse($this->testUser->hasAnyRole(['role does not exist']));
+
+        $this->assertTrue($this->testUser->hasAnyRole('testRole', 'role does not exist'));
     }
 
     /** @test */
@@ -324,6 +343,26 @@ class HasRolesTest extends TestCase
     }
 
     /** @test */
+    public function it_can_determine_that_the_user_has_any_of_the_permissions_directly_using_an_array()
+    {
+        $this->assertFalse($this->testUser->hasAnyPermission(['edit-articles']));
+
+        $this->testUser->givePermissionTo('edit-articles');
+
+        $this->refreshTestUser();
+
+        $this->assertTrue($this->testUser->hasAnyPermission(['edit-news', 'edit-articles']));
+
+        $this->testUser->givePermissionTo('edit-news');
+
+        $this->refreshTestUser();
+
+        $this->testUser->revokePermissionTo($this->testUserPermission);
+
+        $this->assertTrue($this->testUser->hasAnyPermission(['edit-articles', 'edit-news']));
+    }
+
+    /** @test */
     public function it_can_determine_that_the_user_has_any_of_the_permissions_via_role()
     {
         $this->testUserRole->givePermissionTo('edit-articles');
@@ -374,6 +413,17 @@ class HasRolesTest extends TestCase
         $this->assertEquals(
             collect(['edit-articles', 'edit-news']),
             $this->testUser->getAllPermissions()->pluck('name')
+        );
+    }
+
+    /** @test */
+    public function it_can_retrieve_role_names()
+    {
+        $this->testUser->assignRole('testRole', 'testRole2');
+
+        $this->assertEquals(
+            collect(['testRole', 'testRole2']),
+            $this->testUser->getRoleNames()
         );
     }
 }

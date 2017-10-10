@@ -89,7 +89,7 @@ class Role extends Model implements RoleContract
      *
      * @return bool
      *
-     * @throws \Konekt\Acl\Exceptions\GuardMismatch
+     * @throws \Konekt\Acl\Exceptions\GuardDoesNotMatch
      */
     public function hasPermissionTo($permission): bool
     {

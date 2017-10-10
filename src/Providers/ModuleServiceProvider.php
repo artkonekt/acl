@@ -2,13 +2,13 @@
 
 namespace Konekt\Acl\Providers;
 
+use Konekt\Acl\Commands\CreatePermission;
+use Konekt\Acl\Commands\CreateRole;
 use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Models\Role;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Concord\BaseModuleServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
-use Konekt\Acl\Contracts\Role as RoleContract;
-use Konekt\Acl\Contracts\Permission as PermissionContract;
 
 class ModuleServiceProvider extends BaseModuleServiceProvider
 {
@@ -22,6 +22,13 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
     public function boot()
     {
         parent::boot();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                CreateRole::class,
+                CreatePermission::class,
+            ]);
+        }
 
         $this->permissionLoader = $this->app->make(PermissionRegistrar::class);
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Cache\Repository;
+use Konekt\Acl\Contracts\Permission;
 use Konekt\Acl\Models\PermissionProxy;
 
 class PermissionRegistrar
@@ -33,7 +34,7 @@ class PermissionRegistrar
     public function registerPermissions(): bool
     {
         try {
-            $this->getPermissions()->map(function ($permission) {
+            $this->getPermissions()->map(function (Permission $permission) {
                 $this->gate->define($permission->name, function ($user) use ($permission) {
                     return $user->hasPermissionTo($permission);
                 });

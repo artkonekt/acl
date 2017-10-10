@@ -14,6 +14,14 @@ trait HasRoles
 {
     use HasPermissions;
 
+    public static function bootHasRoles()
+    {
+        static::deleting(function ($model) {
+            $model->roles()->detach();
+            $model->permissions()->detach();
+        });
+    }
+
     /**
      * A model may have multiple roles.
      */
@@ -78,6 +86,65 @@ trait HasRoles
     }
 
     /**
+     * @param string|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
+     * @return array
+     */
+    protected function convertToPermissionModels($permissions): array
+    {
+        if ($permissions instanceof Collection) {
+            $permissions = $permissions->toArray();
+        }
+
+        $permissions = array_wrap($permissions);
+
+        return array_map(function ($permission) {
+            if ($permission instanceof Permission) {
+                return $permission;
+            }
+
+            return app(Permission::class)->findByName($permission, $this->getDefaultGuardName());
+        }, $permissions);
+    }
+
+    /**
+     * Scope the model query to certain permissions only.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string|array|\Konekt\Acl\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePermission(Builder $query, $permissions): Builder
+    {
+        $permissions = $this->convertToPermissionModels($permissions);
+
+        $rolesWithPermissions = array_unique(array_reduce($permissions, function ($result, $permission) {
+            return array_merge($result, $permission->roles->all());
+        }, []));
+
+        return $query->
+        where(function ($query) use ($permissions, $rolesWithPermissions) {
+            $query->whereHas('permissions', function ($query) use ($permissions) {
+                $query->where(function ($query) use ($permissions) {
+                    foreach ($permissions as $permission) {
+                        $query->orWhere('permissions.id', $permission->id);
+                    }
+                });
+            });
+            if (count($rolesWithPermissions) > 0) {
+                $query->orWhereHas('roles', function ($query) use ($rolesWithPermissions) {
+                    $query->where(function ($query) use ($rolesWithPermissions) {
+                        foreach ($rolesWithPermissions as $role) {
+                            $query->orWhere('roles.id', $role->id);
+                        }
+                    });
+                });
+            }
+        });
+    }
+
+    /**
      * Assign the given role to the model.
      *
      * @param array|string|\Konekt\Acl\Contracts\Role ...$roles
@@ -116,7 +183,7 @@ trait HasRoles
     /**
      * Remove all current roles and set the given ones.
      *
-     * @param array ...$roles
+     * @param array|Role|string ...$roles
      *
      * @return $this
      */
@@ -136,6 +203,10 @@ trait HasRoles
      */
     public function hasRole($roles): bool
     {
+        if (is_string($roles) && false !== strpos($roles, '|')) {
+            $roles = $this->convertPipeToArray($roles);
+        }
+
         if (is_string($roles)) {
             return $this->roles->contains('name', $roles);
         }
@@ -178,6 +249,10 @@ trait HasRoles
      */
     public function hasAllRoles($roles): bool
     {
+        if (is_string($roles) && false !== strpos($roles, '|')) {
+            $roles = $this->convertPipeToArray($roles);
+        }
+
         if (is_string($roles)) {
             return $this->roles->contains('name', $roles);
         }
@@ -222,6 +297,10 @@ trait HasRoles
      */
     public function hasAnyPermission(...$permissions): bool
     {
+        if (is_array($permissions[0])) {
+            $permissions = $permissions[0];
+        }
+
         foreach ($permissions as $permission) {
             if ($this->hasPermissionTo($permission)) {
                 return true;
@@ -293,6 +372,11 @@ trait HasRoles
             ->values();
     }
 
+    public function getRoleNames(): Collection
+    {
+        return $this->roles->pluck('name');
+    }
+
     protected function getStoredRole($role): Role
     {
         if (is_string($role)) {
@@ -300,5 +384,27 @@ trait HasRoles
         }
 
         return $role;
+    }
+
+    protected function convertPipeToArray(string $pipeString)
+    {
+        $pipeString = trim($pipeString);
+
+        if (strlen($pipeString) <= 2) {
+            return $pipeString;
+        }
+
+        $quoteCharacter = substr($pipeString, 0, 1);
+        $endCharacter = substr($quoteCharacter, -1, 1);
+
+        if ($quoteCharacter !== $endCharacter) {
+            return explode('|', $pipeString);
+        }
+
+        if (! in_array($quoteCharacter, ["'", '"'])) {
+            return explode('|', $pipeString);
+        }
+
+        return explode('|', trim($pipeString, $quoteCharacter));
     }
 }

@@ -89,7 +89,7 @@ trait HasPermissions
     /**
      * @param \Konekt\Acl\Contracts\Permission|\Konekt\Acl\Contracts\Role $roleOrPermission
      *
-     * @throws \Konekt\Acl\Exceptions\GuardMismatch
+     * @throws \Konekt\Acl\Exceptions\GuardDoesNotMatch
      */
     protected function ensureModelSharesGuard($roleOrPermission)
     {

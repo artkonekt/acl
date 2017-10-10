@@ -3,6 +3,7 @@
 namespace Konekt\Acl\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Konekt\Acl\Exceptions\RoleDoesNotExist;
 
 interface Role
 {
