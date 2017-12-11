@@ -1,9 +1,9 @@
 # Konekt Acl Changelog
 
-## 1.0
+## 0.9
 
-### 1.0.0
-##### 2017-06-XX
+### 0.9.0
+##### 2017-12-11
 
-- Initial working version based on Spatie's v2.1.6
+- Initial working version based on Spatie's v2.1.6 & v2.1.7
 - Now it is a Concord module, using Concord's facilities for provider registration, model management, etc

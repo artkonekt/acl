@@ -30,7 +30,7 @@
         "illuminate/container": "~5.4",
         "illuminate/contracts": "~5.4",
         "illuminate/database": "~5.4",
-        "konekt/concord": "dev-master"
+        "konekt/concord": ">=0.9.0"
     },
     "require-dev": {
         "monolog/monolog": "^1.22",
