@@ -14,8 +14,6 @@ namespace Konekt\Acl\Models;
 
 use Konekt\Concord\Proxies\ModelProxy;
 
-
 class RoleProxy extends ModelProxy
 {
-
 }

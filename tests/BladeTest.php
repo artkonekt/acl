@@ -22,8 +22,8 @@ class BladeTest extends TestCase
     public function all_blade_directives_will_evaluate_falsly_when_there_is_nobody_logged_in()
     {
         $permission = 'edit-articles';
-        $role = 'writer';
-        $roles = [$role];
+        $role       = 'writer';
+        $roles      = [$role];
 
         $this->assertEquals('does not have permission', $this->renderView('can', ['permission' => $permission]));
         $this->assertEquals('does not have role', $this->renderView('role', [$role]));
@@ -38,8 +38,8 @@ class BladeTest extends TestCase
     public function all_blade_directives_will_evaluate_falsy_when_somebody_without_roles_or_permissions_is_logged_in()
     {
         $permission = 'edit-articles';
-        $role = 'writer';
-        $roles = 'writer';
+        $role       = 'writer';
+        $roles      = 'writer';
 
         auth()->setUser($this->testUser);
 
@@ -54,8 +54,8 @@ class BladeTest extends TestCase
     public function all_blade_directives_will_evaluate_falsy_when_somebody_with_another_guard_is_logged_in()
     {
         $permission = 'edit-articles';
-        $role = 'writer';
-        $roles = 'writer';
+        $role       = 'writer';
+        $roles      = 'writer';
 
         auth('admin')->setUser($this->testAdmin);
 
@@ -229,7 +229,7 @@ class BladeTest extends TestCase
     public function the_hasallroles_directive_will_evaluate_false_when_the_logged_in_user_doesnt_have_all_required_roles_in_pipe()
     {
         $guard = '';
-        $user = $this->getMember();
+        $user  = $this->getMember();
 
         $user->assignRole('writer');
 

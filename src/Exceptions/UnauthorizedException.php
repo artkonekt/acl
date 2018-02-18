@@ -19,7 +19,7 @@ class UnauthorizedException extends HttpException
             $message = 'User does not have the right roles. Necessary roles are '.$permStr;
         }
 
-        $exception = new static(403, $message, null, []);
+        $exception                = new static(403, $message, null, []);
         $exception->requiredRoles = $roles;
 
         return $exception;
@@ -34,7 +34,7 @@ class UnauthorizedException extends HttpException
             $message = 'User does not have the right permissions. Necessary permissions are '.$permStr;
         }
 
-        $exception = new static(403, $message, null, []);
+        $exception                      = new static(403, $message, null, []);
         $exception->requiredPermissions = $permissions;
 
         return $exception;

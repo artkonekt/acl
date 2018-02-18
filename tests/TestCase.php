@@ -36,12 +36,12 @@ abstract class TestCase extends Orchestra
 
         $this->setUpDatabase($this->app);
 
-        $this->testUser = User::first();
-        $this->testUserRole = RoleProxy::find(1);
+        $this->testUser           = User::first();
+        $this->testUserRole       = RoleProxy::find(1);
         $this->testUserPermission = PermissionProxy::find(1);
 
-        $this->testAdmin = Admin::first();
-        $this->testAdminRole = RoleProxy::find(3);
+        $this->testAdmin           = Admin::first();
+        $this->testAdminRole       = RoleProxy::find(3);
         $this->testAdminPermission = PermissionProxy::find(3);
     }
 

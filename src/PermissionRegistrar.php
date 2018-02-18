@@ -23,7 +23,7 @@ class PermissionRegistrar
 
     public function __construct(Gate $gate, Repository $cache)
     {
-        $this->gate = $gate;
+        $this->gate  = $gate;
         $this->cache = $cache;
     }
 
