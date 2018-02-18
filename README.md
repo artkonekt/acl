@@ -4,9 +4,11 @@
 > Reason for fork was to convert the package into a [Concord compliant](https://github.com/artkonekt/concord) module.
 > **v1.0**: Most of the changes have been ported from Spatie v2.9.0
 
-[![Latest Stable Version](https://poser.pugx.org/konekt/acl/version.png)](https://packagist.org/packages/konekt/acl)
-[![Total Downloads](https://poser.pugx.org/konekt/acl/downloads.png)](https://packagist.org/packages/konekt/acl)
-[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
+[![Travis](https://img.shields.io/travis/artkonekt/acl.svg?style=flat-square)](https://travis-ci.org/artkonekt/acl)
+[![Packagist version](https://img.shields.io/packagist/v/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
+[![Packagist downloads](https://img.shields.io/packagist/dt/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
+[![StyleCI](https://styleci.io/repos/93518548/shield?branch=master)](https://styleci.io/repos/93518548)
+[![MIT Software License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.md)
 
 This package allows you to manage user permissions and roles in a database.
 
