@@ -3,14 +3,14 @@
 namespace Konekt\Acl\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
+use Konekt\Acl\Exceptions\UnauthorizedException;
 
 class PermissionMiddleware
 {
     public function handle($request, Closure $next, $permission)
     {
-        if (Auth::guest()) {
-            abort(403);
+        if (app('auth')->guest()) {
+            throw UnauthorizedException::notLoggedIn();
         }
 
         $permissions = is_array($permission)
@@ -18,11 +18,11 @@ class PermissionMiddleware
             : explode('|', $permission);
 
         foreach ($permissions as $permission) {
-            if (Auth::user()->can($permission)) {
+            if (app('auth')->user()->can($permission)) {
                 return $next($request);
             }
         }
 
-        abort(403);
+        throw UnauthorizedException::forPermissions($permissions);
     }
 }

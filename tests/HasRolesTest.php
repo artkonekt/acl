@@ -30,6 +30,20 @@ class HasRolesTest extends TestCase
     }
 
     /** @test */
+    public function it_can_assign_and_remove_a_role_on_a_permission()
+    {
+        $this->testUserPermission->assignRole('testRole');
+
+        $this->assertTrue($this->testUserPermission->hasRole('testRole'));
+
+        $this->testUserPermission->removeRole('testRole');
+
+        $this->refreshTestUserPermission();
+
+        $this->assertFalse($this->testUserPermission->hasRole('testRole'));
+    }
+
+    /** @test */
     public function it_can_assign_a_role_using_an_object()
     {
         $this->testUser->assignRole($this->testUserRole);
@@ -38,9 +52,17 @@ class HasRolesTest extends TestCase
     }
 
     /** @test */
+    public function it_can_assign_a_role_using_an_id()
+    {
+        $this->testUser->assignRole($this->testUserRole->id);
+
+        $this->assertTrue($this->testUser->hasRole($this->testUserRole));
+    }
+
+    /** @test */
     public function it_can_assign_multiple_roles_at_once()
     {
-        $this->testUser->assignRole('testRole', 'testRole2');
+        $this->testUser->assignRole($this->testUserRole->id, 'testRole2');
 
         $this->assertTrue($this->testUser->hasRole('testRole'));
 
@@ -50,7 +72,7 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_assign_multiple_roles_using_an_array()
     {
-        $this->testUser->assignRole(['testRole', 'testRole2']);
+        $this->testUser->assignRole([$this->testUserRole->id, 'testRole2']);
 
         $this->assertTrue($this->testUser->hasRole('testRole'));
 
@@ -94,6 +116,18 @@ class HasRolesTest extends TestCase
     }
 
     /** @test */
+    public function it_can_sync_roles_from_a_string_on_a_permission()
+    {
+        $this->testUserPermission->assignRole('testRole');
+
+        $this->testUserPermission->syncRoles('testRole2');
+
+        $this->assertFalse($this->testUserPermission->hasRole('testRole'));
+
+        $this->assertTrue($this->testUserPermission->hasRole('testRole2'));
+    }
+
+    /** @test */
     public function it_can_sync_multiple_roles()
     {
         $this->testUser->syncRoles('testRole', 'testRole2');
@@ -114,7 +148,7 @@ class HasRolesTest extends TestCase
     }
 
     /** @test */
-    public function it_will_remove_all_roles_when_an_empty_array_is_past_to_sync_roles()
+    public function it_will_remove_all_roles_when_an_empty_array_is_passed_to_sync_roles()
     {
         $this->testUser->assignRole('testRole');
 
@@ -164,9 +198,13 @@ class HasRolesTest extends TestCase
         $user1->assignRole('testRole');
         $user2->assignRole('testRole2');
 
-        $scopedUsers = User::role('testRole')->get();
+        $scopedUsers1 = User::role($this->testUserRole)->get();
+        $scopedUsers2 = User::role([$this->testUserRole])->get();
+        $scopedUsers3 = User::role(collect([$this->testUserRole]))->get();
 
-        $this->assertEquals($scopedUsers->count(), 1);
+        $this->assertEquals($scopedUsers1->count(), 1);
+        $this->assertEquals($scopedUsers2->count(), 1);
+        $this->assertEquals($scopedUsers3->count(), 1);
     }
 
     /** @test */
@@ -425,5 +463,17 @@ class HasRolesTest extends TestCase
             collect(['testRole', 'testRole2']),
             $this->testUser->getRoleNames()
         );
+    }
+
+    /** @test */
+    public function it_does_not_detach_roles_when_soft_deleting()
+    {
+        $user = SoftDeletingUser::create(['email' => 'test@example.com']);
+        $user->assignRole('testRole');
+        $user->delete();
+
+        $user = SoftDeletingUser::withTrashed()->find($user->id);
+
+        $this->assertTrue($user->hasRole('testRole'));
     }
 }

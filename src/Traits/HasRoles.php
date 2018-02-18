@@ -17,6 +17,9 @@ trait HasRoles
     public static function bootHasRoles()
     {
         static::deleting(function ($model) {
+            if (method_exists($model, 'isForceDeleting') && ! $model->isForceDeleting()) {
+                return;
+            }
             $model->roles()->detach();
             $model->permissions()->detach();
         });
@@ -61,7 +64,7 @@ trait HasRoles
     public function scopeRole(Builder $query, $roles): Builder
     {
         if ($roles instanceof Collection) {
-            $roles = $roles->toArray();
+            $roles = $roles->all();
         }
 
         if (! is_array($roles)) {
@@ -93,7 +96,7 @@ trait HasRoles
     protected function convertToPermissionModels($permissions): array
     {
         if ($permissions instanceof Collection) {
-            $permissions = $permissions->toArray();
+            $permissions = $permissions->all();
         }
 
         $permissions = array_wrap($permissions);
@@ -379,6 +382,10 @@ trait HasRoles
 
     protected function getStoredRole($role): Role
     {
+        if (is_numeric($role)) {
+            return RoleProxy::findById($role, $this->getDefaultGuardName());
+        }
+
         if (is_string($role)) {
             return RoleProxy::findByName($role, $this->getDefaultGuardName());
         }

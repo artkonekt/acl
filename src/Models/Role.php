@@ -3,6 +3,7 @@
 namespace Konekt\Acl\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Konekt\Acl\Guard;
 use Konekt\Acl\Traits\HasPermissions;
 use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
@@ -28,7 +29,7 @@ class Role extends Model implements RoleContract
 
     public static function create(array $attributes = [])
     {
-        $attributes['guard_name'] = $attributes['guard_name'] ?? config('auth.defaults.guard');
+        $attributes['guard_name'] = $attributes['guard_name'] ?? Guard::getDefaultName(static::class);
 
         if (static::where('name', $attributes['name'])->where('guard_name', $attributes['guard_name'])->first()) {
             throw RoleAlreadyExists::create($attributes['name'], $attributes['guard_name']);
@@ -71,12 +72,25 @@ class Role extends Model implements RoleContract
      */
     public static function findByName(string $name, $guardName = null): RoleContract
     {
-        $guardName = $guardName ?? config('auth.defaults.guard');
+        $guardName = $guardName ?? Guard::getDefaultName(static::class);
 
         $role = static::where('name', $name)->where('guard_name', $guardName)->first();
 
         if (! $role) {
-            throw RoleDoesNotExist::create($name);
+            throw RoleDoesNotExist::named($name);
+        }
+
+        return $role;
+    }
+
+    public static function findById(int $id, $guardName = null): RoleContract
+    {
+        $guardName = $guardName ?? Guard::getDefaultName(static::class);
+
+        $role = static::where('id', $id)->where('guard_name', $guardName)->first();
+
+        if (! $role) {
+            throw RoleDoesNotExist::withId($id);
         }
 
         return $role;

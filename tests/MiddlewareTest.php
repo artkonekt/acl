@@ -5,9 +5,9 @@ namespace Konekt\Acl\Test;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Konekt\Acl\Exceptions\UnauthorizedException;
 use Konekt\Acl\Http\Middleware\RoleMiddleware;
 use Konekt\Acl\Http\Middleware\PermissionMiddleware;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MiddlewareTest extends TestCase
 {
@@ -162,13 +162,49 @@ class MiddlewareTest extends TestCase
             ), 403);
     }
 
+    /** @test */
+    public function the_required_roles_can_be_fetched_from_the_exception()
+    {
+        Auth::login($this->testUser);
+
+        $requiredRoles = [];
+
+        try {
+            $this->roleMiddleware->handle(new Request(), function () {
+                return (new Response())->setContent('<html></html>');
+            }, 'some-role');
+        } catch (UnauthorizedException $e) {
+            $requiredRoles = $e->getRequiredRoles();
+        }
+
+        $this->assertEquals(['some-role'], $requiredRoles);
+    }
+
+    /** @test */
+    public function the_required_permissions_can_be_fetched_from_the_exception()
+    {
+        Auth::login($this->testUser);
+
+        $requiredPermissions = [];
+
+        try {
+            $this->permissionMiddleware->handle(new Request(), function () {
+                return (new Response())->setContent('<html></html>');
+            }, 'some-permission');
+        } catch (UnauthorizedException $e) {
+            $requiredPermissions = $e->getRequiredPermissions();
+        }
+
+        $this->assertEquals(['some-permission'], $requiredPermissions);
+    }
+
     protected function runMiddleware($middleware, $parameter)
     {
         try {
             return $middleware->handle(new Request(), function () {
                 return (new Response())->setContent('<html></html>');
             }, $parameter)->status();
-        } catch (HttpException $e) {
+        } catch (UnauthorizedException $e) {
             return $e->getStatusCode();
         }
     }
