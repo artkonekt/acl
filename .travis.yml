@@ -27,10 +27,10 @@ script:
 - vendor/bin/phpunit
 
 before_install:
+  - [ '4' = $L5_VER ] && composer require "phpunit/phpunit:~5.7" --no-update -v
   - composer require "illuminate/support:5.${L5_VER}.*" --no-update -v
   - composer require "illuminate/console:5.${L5_VER}.*" --no-update -v
   - composer require "orchestra/testbench:3.${L5_VER}.*" --no-update -v
-  - [ '4' = $L5_VER ] && composer require "phpunit/phpunit:~5.7" --no-update -v
 
 install: composer install --no-interaction
 
