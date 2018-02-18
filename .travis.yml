@@ -24,7 +24,7 @@ matrix:
       env: L5_VER=6
 
 script:
-- vendor/bin/phpunit
+  - vendor/bin/phpunit
 
 before_install:
   - [ '4' = $L5_VER ] && composer require "phpunit/phpunit:~5.7" --no-update -v
