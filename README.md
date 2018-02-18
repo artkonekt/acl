@@ -1,7 +1,8 @@
 # Concord (Laravel) Module For Handling Permissions And Roles
 
-> This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission). Reason for fork was to convert the package into a [Concord compliant](https://github.com/artkonekt/concord) module.
-> Changes have also been synced with Spatie versions: 2.1.6
+> This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission).
+> Reason for fork was to convert the package into a [Concord compliant](https://github.com/artkonekt/concord) module.
+> **v1.0**: Most of the changes have been ported from Spatie v2.9.0
 
 [![Latest Stable Version](https://poser.pugx.org/konekt/acl/version.png)](https://packagist.org/packages/konekt/acl)
 [![Total Downloads](https://poser.pugx.org/konekt/acl/downloads.png)](https://packagist.org/packages/konekt/acl)
@@ -31,14 +32,6 @@ $user->can('edit articles');
 
 The original author of this package is Spatie, a webdesign agency in Antwerp, Belgium. You'll find an overview of all
 their open source projects [on their website](https://spatie.be/opensource).
-
-## Postcardware
-
-You're free to use this package (it's [MIT-licensed](LICENSE.md)), but if it makes it to your production environment Spatie will highly appreciate you send them a postcard from your hometown, mentioning which of their package(s) you are using.
-
-Their address is: Spatie, Samberstraat 69D, 2060 Antwerp, Belgium.
-
-All received postcards are published [on spatie.be](https://spatie.be/en/opensource/postcards).
 
 ## Installation
 
@@ -80,13 +73,12 @@ return [
             'cache_expiration_time' => 60 * 24,
         
             /*
-             * By default we'll make an entry in the application log when the permissions
-             * could not be loaded. Normally this only occurs while installing the packages.
-             *
-             * If for some reason you want to disable that logging, set this value to false.
+             * When set to true, the required permission/role names are added to the exception
+             * message. This could be considered an information leak in some contexts, so
+             * the default setting is false here for optimum safety.
              */
         
-            'log_registration_exception' => true
+            'display_permission_in_exception' => false
             
         ]
     ]
@@ -94,7 +86,8 @@ return [
 ```
 
 The main difference between this fork and the original Spatie version is
-that models are managed via Concord's [model proxies feature](https://github.com/artkonekt/concord/blob/master/docs/models.md#concords-solution).
+that models are managed via Concord's
+[model proxies feature](https://artkonekt.github.io/concord/#/proxies).
 
 Thus Model classes and table names have been removed from config and have
 been added as Concord models. Thus you can easily replace them in your
@@ -139,7 +132,7 @@ class Role extends BaseRole
 
 ## Usage
 
-First add the `Konekt\Acl\Traits\HasRoles` trait to your User model(s):
+First, add the `Konekt\Acl\Traits\HasRoles` trait to your User model(s):
 
 ```php
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -206,7 +199,7 @@ $permissions = $user->getAllPermissions();
 $roles = $user->getRoleNames(); // Returns a collection
 ```
 
-The `HasRoles` trait also add a `role` scopes to your models to scope the query to certain roles or permissions:
+The `HasRoles` trait also adds a `role` scope to your models to scope the query to certain roles or permissions:
 
 ```php
 $users = User::role('writer')->get(); // Returns only users with the role 'writer'
@@ -348,7 +341,7 @@ $user->assignRole('writer');
 $user->givePermissionTo('delete articles');
 ```
 
-In the above example a role is given permission to edit articles and this role is assigned to a user.
+In the above example, a role is given permission to edit articles and this role is assigned to a user.
 Now the user can edit articles and additionally delete articles. The permission of 'delete articles' is the user's direct permission because it is assigned directly to them.
 When we call `$user->hasDirectPermission('delete articles')` it returns `true`,
 but `false` for `$user->hasDirectPermission('edit articles')`.
@@ -448,11 +441,11 @@ or
 
 When using the default Laravel auth configuration all of the above methods will work out of the box, no extra configuration required.
 
-However when using multiple guards they will act like namespaces for your permissions and roles. Meaning every guard has its own set of permissions and roles that can be assigned to their user model.
+However, when using multiple guards they will act like namespaces for your permissions and roles. Meaning every guard has its own set of permissions and roles that can be assigned to their user model.
 
 ### Using permissions and roles with multiple guards
 
-By default the default guard (`config('auth.default.guard')`) will be used as the guard for new permissions and roles. When creating permissions and roles for specific guards you'll have to specify their `guard_name` on the model:
+By default the default guard (`config('auth.defaults.guard')`) will be used as the guard for new permissions and roles. When creating permissions and roles for specific guards you'll have to specify their `guard_name` on the model:
 
 ```php
 // Create a superadmin role for the admin users
@@ -536,9 +529,26 @@ public function __construct()
 }
 ```
 
+### Catching role and permission failures
+
+If you want to override the default `403` response, you can catch the `UnauthorizedException` using
+your app's exception handler:
+
+```php
+public function render($request, Exception $exception)
+{
+    if ($exception instanceof \Konekt\Acl\Exceptions\UnauthorizedException) {
+        // Code here ...
+    }
+
+    return parent::render($request, $exception);
+}
+```
+
+
 ## Using artisan commands
 
-You can create a role or permission from console with artisan commands.
+You can create a role or permission from a console with artisan commands.
 
 ```bash
 php artisan acl:create-role writer
@@ -579,7 +589,7 @@ Two notes about Database Seeding:
 
 1. It is best to flush the `konekt.acl.cache` before seeding, to avoid cache conflict errors. This can be done from an Artisan command (see Troubleshooting: Cache section, later) or directly in a seeder class (see example below).
 
-2. Here's a sample seeder, which clears the cache, creates permissions, and then assigns permissions to roles:
+2. Here's a sample seeder, which clears the cache, creates permissions and then assigns permissions to roles:
 
 	```php
 	use Illuminate\Database\Seeder;
@@ -636,6 +646,9 @@ $user->syncRoles(params);
 $role->givePermissionTo('edit articles');
 $role->revokePermissionTo('edit articles');
 $role->syncPermissions(params);
+$permission->assignRole('writer');
+$permission->removeRole('writer');
+$permission->syncRoles(params);
 ```
 
 HOWEVER, if you manipulate permission/role data directly in the database instead of calling the supplied methods, then you will not see the changes reflected in the application unless you manually reset the cache.
@@ -674,6 +687,14 @@ composer test
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+## Postcardware
+
+You're free to use this package (it's [MIT-licensed](LICENSE.md)), but if it makes it to your production environment Spatie will highly appreciate you send them a postcard from your hometown, mentioning which of their package(s) you are using.
+
+Their address is: Spatie, Samberstraat 69D, 2060 Antwerp, Belgium.
+
+All received postcards are published [on spatie.be](https://spatie.be/en/opensource/postcards).
 
 
 ## Credits
