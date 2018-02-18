@@ -2,6 +2,7 @@
 
 > This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission).
 > Reason for fork was to convert the package into a [Concord compliant](https://github.com/artkonekt/concord) module.
+>
 > **v1.0**: Most of the changes have been ported from Spatie v2.9.0
 
 [![Travis](https://img.shields.io/travis/artkonekt/acl.svg?style=flat-square)](https://travis-ci.org/artkonekt/acl)
