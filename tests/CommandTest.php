@@ -5,9 +5,19 @@ namespace Konekt\Acl\Test;
 use Artisan;
 use Konekt\Acl\Models\Role;
 use Konekt\Acl\Models\Permission;
+use Konekt\Acl\Test\Concerns\InteractsWithAclCache;
 
 class CommandTest extends TestCase
 {
+    use InteractsWithAclCache;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->setUpCacheTest();
+    }
+
     /** @test */
     public function it_can_create_a_role()
     {
@@ -48,5 +58,24 @@ class CommandTest extends TestCase
         $this->assertCount(1, Permission::where('name', 'new-permission')
             ->where('guard_name', 'api')
             ->get());
+    }
+
+    /** @test */
+    public function the_cache_clear_command_flushes_the_permission_cache()
+    {
+        $this->testUserRole->givePermissionTo($this->testUserPermission);
+
+        $this->resetQueryCount();
+        $this->registrar->getPermissions();
+        $this->assertQueryCount($this->queriesPerCacheProvision);
+
+        $this->resetQueryCount();
+        $this->registrar->getPermissions();
+        $this->assertQueryCount(0);
+
+        Artisan::call('acl:cache:clear');
+        $this->resetQueryCount();
+        $this->registrar->getPermissions();
+        $this->assertQueryCount($this->queriesPerCacheProvision);
     }
 }

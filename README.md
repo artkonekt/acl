@@ -657,10 +657,13 @@ $permission->syncRoles(params);
 HOWEVER, if you manipulate permission/role data directly in the database instead of calling the supplied methods, then you will not see the changes reflected in the application unless you manually reset the cache.
 
 ### Manual cache reset
+
 To manually reset the cache for this package, run:
 ```bash
-php artisan cache:forget spatie.permission.cache
+php artisan acl:cache:clear
 ```
+
+> It is equivalent to running `php artisan cache:forget konekt.acl.cache`
 
 ### Cache Identifier
 

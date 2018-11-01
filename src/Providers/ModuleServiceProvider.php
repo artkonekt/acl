@@ -2,6 +2,7 @@
 
 namespace Konekt\Acl\Providers;
 
+use Konekt\Acl\Commands\ClearCache;
 use Konekt\Acl\Commands\CreatePermission;
 use Konekt\Acl\Commands\CreateRole;
 use Konekt\Acl\Models\Permission;
@@ -27,6 +28,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
             $this->commands([
                 CreateRole::class,
                 CreatePermission::class,
+                ClearCache::class
             ]);
         }
 

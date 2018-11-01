@@ -11,15 +11,13 @@ use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 
 class PermissionRegistrar
 {
+    const CACHE_KEY = 'konekt.acl.cache';
+
     /** @var \Illuminate\Contracts\Auth\Access\Gate */
     protected $gate;
 
     /** @var \Illuminate\Contracts\Cache\Repository */
     protected $cache;
-
-
-    /** @var string */
-    protected $cacheKey = 'konekt.acl.cache';
 
     public function __construct(Gate $gate, Repository $cache)
     {
@@ -43,12 +41,12 @@ class PermissionRegistrar
 
     public function forgetCachedPermissions()
     {
-        $this->cache->forget($this->cacheKey);
+        $this->cache->forget(static::CACHE_KEY);
     }
 
     public function getPermissions(): Collection
     {
-        return $this->cache->remember($this->cacheKey, config('konekt.acl.cache_expiration_time'), function () {
+        return $this->cache->remember(static::CACHE_KEY, config('konekt.acl.cache_expiration_time'), function () {
             return PermissionProxy::with('roles')->get();
         });
     }

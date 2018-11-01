@@ -2,26 +2,19 @@
 
 namespace Konekt\Acl\Test;
 
-use Illuminate\Support\Facades\DB;
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\Models\RoleProxy;
-use Konekt\Acl\PermissionRegistrar;
+use Konekt\Acl\Test\Concerns\InteractsWithAclCache;
 
 class CacheTest extends TestCase
 {
-    const QUERIES_PER_CACHE_PROVISION = 2;
-
-    protected $registrar;
+    use InteractsWithAclCache;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->registrar = app(PermissionRegistrar::class);
-
-        $this->registrar->forgetCachedPermissions();
-
-        DB::connection()->enableQueryLog();
+        $this->setUpCacheTest();
     }
 
     /** @test */
@@ -29,11 +22,11 @@ class CacheTest extends TestCase
     {
         $this->registrar->getPermissions();
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION);
+        $this->assertQueryCount($this->queriesPerCacheProvision);
 
         $this->registrar->getPermissions();
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION);
+        $this->assertQueryCount($this->queriesPerCacheProvision);
     }
 
     /** @test */
@@ -45,7 +38,7 @@ class CacheTest extends TestCase
 
         $this->registrar->getPermissions();
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION);
+        $this->assertQueryCount($this->queriesPerCacheProvision);
     }
 
     /** @test */
@@ -57,7 +50,7 @@ class CacheTest extends TestCase
 
         $this->registrar->getPermissions();
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION);
+        $this->assertQueryCount($this->queriesPerCacheProvision);
     }
 
     /** @test */
@@ -72,7 +65,7 @@ class CacheTest extends TestCase
 
         $this->registrar->getPermissions();
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION);
+        $this->assertQueryCount($this->queriesPerCacheProvision);
     }
 
     /** @test */
@@ -98,7 +91,7 @@ class CacheTest extends TestCase
 
         $this->registrar->getPermissions();
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION);
+        $this->assertQueryCount($this->queriesPerCacheProvision);
     }
 
     /** @test */
@@ -111,7 +104,7 @@ class CacheTest extends TestCase
 
         $this->assertTrue($this->testUser->hasPermissionTo('edit-articles'));
 
-        $this->assertQueryCount(self::QUERIES_PER_CACHE_PROVISION + 2); // + 2 for getting the User's relations
+        $this->assertQueryCount($this->queriesPerCacheProvision + 2); // + 2 for getting the User's relations
         $this->resetQueryCount();
 
         $this->assertTrue($this->testUser->hasPermissionTo('edit-news'));
@@ -121,15 +114,5 @@ class CacheTest extends TestCase
         $this->assertTrue($this->testUser->hasPermissionTo('edit-articles'));
 
         $this->assertQueryCount(0);
-    }
-
-    protected function assertQueryCount(int $expected)
-    {
-        $this->assertCount($expected, DB::getQueryLog());
-    }
-
-    protected function resetQueryCount()
-    {
-        DB::flushQueryLog();
     }
 }
