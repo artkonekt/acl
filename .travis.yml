@@ -16,12 +16,16 @@ matrix:
       env: L5_VER=5
     - php: 7.1
       env: L5_VER=6
+    - php: 7.1
+      env: L5_VER=7
     - php: 7.2
       env: L5_VER=4
     - php: 7.2
       env: L5_VER=5
     - php: 7.2
       env: L5_VER=6
+    - php: 7.2
+      env: L5_VER=7
 
 script:
   - vendor/bin/phpunit
@@ -36,3 +40,5 @@ install: composer install --no-interaction
 
 notifications:
   email: false
+  slack:
+    secure: C+rQ1lGvlRPxFqMpgtZYlQdbaOnsKmuvFzsZ1RFdTyNT980B0qxMGjhjCrPwY47hYsMHyS4ouWwNgle5WdxBEE4JVqTdGsos5N7eq4ScODcGuSVsW1XqdmflWAsHPRgbUq2iGyyadx8aLoVxwmK8GOKKwJXW1WRJScocBS5muLtsf17LKqx0h2c0mtauLadmupTAGmm54vlYEjSvl5UR26Evd3ovRpizKqh72cG9Z+UEKVI5uuMP4RdzmPHatI7rx9JLW5A1uMe2Y/BuZX0NmsLRGnIlXzQD8K1Es9ELjyaiz9UlZmz1uBTGvA/RBpHkBbzNB8thHyU1hsPt1QvQlQcD/9tjL3/sdKlDQAmkJIBz7e8dAxcXFdt8dUt77ZMi3V3qjbXMtdz6aOnPCTKnkfVv5eaa+X7oKdduJpGlD1LbAC5xalsgux36gFscCCfgKgbP7kXScOxFUUq1YYlxktb4qAopcoK7EE/5p1RjScuSW5MdATVrOhQEGVgzBRQuT4SBw0waGxMPqDivUyYv4FceW6PNF9MKi1j9zK3uIIrvX/WO+gKrZkoPxt3H1czSahuZXw/VKZ9emGuMdQxHSS9dlLnqobA/hNL7rD+CNZdmsCOLr+40ZYF31ND0W7s/+FJK0tR6ySFVF87RL2B0hsETF2SHqVs2gM6CufyV2TQ=
