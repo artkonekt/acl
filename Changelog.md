@@ -1,14 +1,19 @@
 # Konekt Acl Changelog
 
-# 1.1
+# 1.x Series
+
+## Unreleased
+##### 2019-11-XX
+
+- Added Laravel 5.8 & 6 support
+- Removed Laravel 5.4 support
+- Minimum required Concord version is 1.4+
 
 ## 1.1.0
 ##### 2018-11-01
 
 - Added clear cache command
 - Laravel 5.7 compatibility
-
-# 1.0
 
 ## 1.0.0
 ##### 2018-02-18
