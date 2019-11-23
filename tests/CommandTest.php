@@ -11,7 +11,7 @@ class CommandTest extends TestCase
 {
     use InteractsWithAclCache;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

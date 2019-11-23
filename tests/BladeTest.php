@@ -7,7 +7,7 @@ use Konekt\Acl\Models\RoleProxy;
 
 class BladeTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

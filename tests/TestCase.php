@@ -30,7 +30,7 @@ abstract class TestCase extends Orchestra
     /** @var \Konekt\Acl\Models\Permission */
     protected $testAdminPermission;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
