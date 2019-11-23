@@ -2,6 +2,7 @@
 
 namespace Konekt\Acl\Traits;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Konekt\Acl\Contracts\Role;
 use Illuminate\Database\Eloquent\Builder;
@@ -99,7 +100,7 @@ trait HasRoles
             $permissions = $permissions->all();
         }
 
-        $permissions = array_wrap($permissions);
+        $permissions = Arr::wrap($permissions);
 
         return array_map(function ($permission) {
             if ($permission instanceof Permission) {
