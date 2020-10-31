@@ -2,9 +2,9 @@
 
 namespace Konekt\Acl;
 
+use Illuminate\Cache\CacheManager;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Auth\Access\Gate;
-use Illuminate\Contracts\Cache\Repository;
 use Konekt\Acl\Models\PermissionProxy;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
@@ -16,10 +16,10 @@ class PermissionRegistrar
     /** @var \Illuminate\Contracts\Auth\Access\Gate */
     protected $gate;
 
-    /** @var \Illuminate\Contracts\Cache\Repository */
+    /** @var CacheManager */
     protected $cache;
 
-    public function __construct(Gate $gate, Repository $cache)
+    public function __construct(Gate $gate, CacheManager $cache)
     {
         $this->gate  = $gate;
         $this->cache = $cache;

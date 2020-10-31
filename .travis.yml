@@ -15,11 +15,11 @@ env:
   - LARAVEL=5.7
   - LARAVEL=5.8
   - LARAVEL=6.0
-  - LARAVEL=6.18
+  - LARAVEL=6.19
   - LARAVEL=7.0
   - LARAVEL=7.28
   - LARAVEL=8.0
-  - LARAVEL=8.1
+  - LARAVEL=8.12
 
 matrix:
   exclude:
