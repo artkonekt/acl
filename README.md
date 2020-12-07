@@ -6,7 +6,6 @@
 > **v1.0**: Most of the changes have been ported from Spatie v2.9.0
 
 [![Tests](https://img.shields.io/github/workflow/status/artkonekt/acl/tests/master?style=flat-square)](https://github.com/artkonekt/acl/actions?query=workflow%3Atests)
-[![Travis](https://img.shields.io/travis/com/artkonekt/acl.svg?style=flat-square)](https://travis-ci.com/artkonekt/acl)
 [![Packagist version](https://img.shields.io/packagist/v/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
 [![Packagist downloads](https://img.shields.io/packagist/dt/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
 [![StyleCI](https://styleci.io/repos/93518548/shield?branch=master)](https://styleci.io/repos/93518548)

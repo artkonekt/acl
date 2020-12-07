@@ -1,5 +1,5 @@
 <?php
 return [
     'name'    => 'Konekt Acl Module',
-    'version' => '1.5-dev'
+    'version' => '1.5.0'
 ];
