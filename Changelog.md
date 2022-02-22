@@ -2,8 +2,8 @@
 
 # 1.x Series
 
-## Unreleased
-##### 2022-02-XX
+## 1.6.0
+##### 2022-02-22
 
 - Added PHP 8.1 support*
 - Added Laravel 9 support
