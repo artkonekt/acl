@@ -5,8 +5,10 @@
 ## Unreleased
 ##### 2022-02-XX
 
-- Added PHP 8.1 support
+- Added PHP 8.1 support*
 - Added Laravel 9 support
+
+> *: Note that PHP 8.1 + Laravel 7.30 or 6.20 aren't supported 
 
 ## 1.5.0
 ##### 2020-12-07
