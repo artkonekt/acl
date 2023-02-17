@@ -2,6 +2,14 @@
 
 # 1.x Series
 
+## Unreleased
+##### 2023-XX-YY
+
+- Added PHP 8.2 support
+- Added Laravel 10 support
+- Dropped PHP 7.3 & 7.4 support
+- Dropped Laravel 6-8 support
+
 ## 1.6.0
 ##### 2022-02-22
 
