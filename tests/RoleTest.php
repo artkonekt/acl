@@ -71,9 +71,9 @@ class RoleTest extends TestCase
     }
 
     /** @test */
-    public function it_can_be_given_multiple_permissions_using_an_array()
+    public function it_can_be_given_multiple_permissions()
     {
-        $this->testUserRole->givePermissionTo(['edit-articles', 'edit-news']);
+        $this->testUserRole->givePermissionTo('edit-articles', 'edit-news');
 
         $this->assertTrue($this->testUserRole->hasPermissionTo('edit-articles'));
         $this->assertTrue($this->testUserRole->hasPermissionTo('edit-news'));
@@ -125,13 +125,13 @@ class RoleTest extends TestCase
     }
 
     /** @test */
-    public function it_will_remove_all_permissions_when_passing_an_empty_array_to_sync_permissions()
+    public function it_will_remove_all_permissions_when_passing_no_arguments_to_sync_permissions()
     {
         $this->testUserRole->givePermissionTo('edit-articles');
 
         $this->testUserRole->givePermissionTo('edit-news');
 
-        $this->testUserRole->syncPermissions([]);
+        $this->testUserRole->syncPermissions();
 
         $this->assertFalse($this->testUserRole->hasPermissionTo('edit-articles'));
 

@@ -198,40 +198,21 @@ class HasRolesTest extends TestCase
         $user1->assignRole('testRole');
         $user2->assignRole('testRole2');
 
-        $scopedUsers1 = User::role($this->testUserRole)->get();
-        $scopedUsers2 = User::role([$this->testUserRole])->get();
-        $scopedUsers3 = User::role(collect([$this->testUserRole]))->get();
+        $scopedUsers1 = User::havingRole($this->testUserRole)->get();
 
         $this->assertEquals($scopedUsers1->count(), 1);
-        $this->assertEquals($scopedUsers2->count(), 1);
-        $this->assertEquals($scopedUsers3->count(), 1);
     }
 
     /** @test */
-    public function it_can_scope_users_using_an_array()
+    public function it_can_scope_users_using_multiple_roles()
     {
         $user1 = User::create(['email' => 'user1@test.com']);
         $user2 = User::create(['email' => 'user2@test.com']);
         $user1->assignRole($this->testUserRole);
         $user2->assignRole('testRole2');
 
-        $scopedUsers1 = User::role([$this->testUserRole])->get();
-        $scopedUsers2 = User::role(['testRole', 'testRole2'])->get();
-
-        $this->assertEquals($scopedUsers1->count(), 1);
-        $this->assertEquals($scopedUsers2->count(), 2);
-    }
-
-    /** @test */
-    public function it_can_scope_users_using_a_collection()
-    {
-        $user1 = User::create(['email' => 'user1@test.com']);
-        $user2 = User::create(['email' => 'user2@test.com']);
-        $user1->assignRole($this->testUserRole);
-        $user2->assignRole('testRole2');
-
-        $scopedUsers1 = User::role([$this->testUserRole])->get();
-        $scopedUsers2 = User::role(collect(['testRole', 'testRole2']))->get();
+        $scopedUsers1 = User::havingRole($this->testUserRole)->get();
+        $scopedUsers2 = User::havingRoles('testRole', 'testRole2')->get();
 
         $this->assertEquals($scopedUsers1->count(), 1);
         $this->assertEquals($scopedUsers2->count(), 2);
@@ -245,7 +226,7 @@ class HasRolesTest extends TestCase
         $user1->assignRole($this->testUserRole);
         $user2->assignRole('testRole2');
 
-        $scopedUsers = User::role($this->testUserRole)->get();
+        $scopedUsers = User::havingRole($this->testUserRole)->get();
 
         $this->assertEquals($scopedUsers->count(), 1);
     }
@@ -255,11 +236,11 @@ class HasRolesTest extends TestCase
     {
         $this->expectException(RoleDoesNotExist::class);
 
-        User::role('testAdminRole')->get();
+        User::havingRole('testAdminRole')->get();
 
         $this->expectException(GuardDoesNotMatch::class);
 
-        User::role($this->testAdminRole)->get();
+        User::havingRole($this->testAdminRole)->get();
     }
 
     /** @test */

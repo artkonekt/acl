@@ -4,6 +4,7 @@ namespace Konekt\Acl\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Konekt\Acl\Contracts\Permission as PermissionContract;
+use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 use Konekt\Acl\Guard;
 use Konekt\Acl\Traits\HasPermissions;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
@@ -78,7 +79,11 @@ class Role extends Model implements RoleContract
     public function hasPermissionTo(string|PermissionContract $permission): bool
     {
         if (is_string($permission)) {
-            $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
+            $name = $permission;
+            $permission = PermissionProxy::findByName($name, $this->getDefaultGuardName());
+            if (null === $permission) {
+                throw PermissionDoesNotExist::create($name, $this->getDefaultGuardName());
+            }
         }
 
         if ($this->getGuardNames()->doesntContain($permission->guard_name)) {

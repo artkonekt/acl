@@ -19,7 +19,7 @@ trait HasPermissions
      *
      * @return $this
      */
-    public function givePermissionTo(string|Permission ...$permissions)
+    public function givePermissionTo(string|Permission ...$permissions): static
     {
         $normalized = [];
         foreach ($permissions as $permission) {
@@ -40,16 +40,12 @@ trait HasPermissions
 
     /**
      * Remove all current permissions and set the given ones.
-     *
-     * @param string|array|Permission|\Illuminate\Support\Collection $permissions
-     *
-     * @return $this
      */
-    public function syncPermissions(...$permissions)
+    public function syncPermissions(...$permissions): static
     {
         $this->permissions()->detach();
 
-        return $this->givePermissionTo($permissions);
+        return $this->givePermissionTo(...$permissions);
     }
 
     /**
@@ -59,7 +55,7 @@ trait HasPermissions
      *
      * @return $this
      */
-    public function revokePermissionTo($permission)
+    public function revokePermissionTo($permission): static
     {
         $this->permissions()->detach($this->getStoredPermission($permission));
 

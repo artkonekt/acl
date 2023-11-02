@@ -2,18 +2,21 @@
 
 namespace Konekt\Acl\Traits;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Konekt\Acl\Contracts\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Konekt\Acl\Contracts\Permission;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\Models\RoleProxy;
 
 /**
  * @method static havingPermission(string|Permission $permission): Builder
  * @method static havingPermissions(string|Permission ...$permissions): Builder
+ * @method static havingRole(string|Role $role): Builder
+ * @method static havingRoles(string|Role ...$roles): Builder
  */
 trait HasRoles
 {
@@ -58,30 +61,20 @@ trait HasRoles
         );
     }
 
-    /**
-     * Scope the model query to certain roles only.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|array|Role|\Illuminate\Support\Collection $roles
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeRole(Builder $query, $roles): Builder
+    public function scopeHavingRole(Builder $query, string|Role $role): Builder
     {
-        if ($roles instanceof Collection) {
-            $roles = $roles->all();
-        }
+        return $this->scopeHavingRoles($query, $role);
+    }
 
-        if (! is_array($roles)) {
-            $roles = [$roles];
-        }
-
+    public function scopeHavingRoles(Builder $query, string|Role ...$roles): Builder
+    {
         $roles = array_map(function ($role) {
-            if ($role instanceof Role) {
-                return $role;
+            $result = $role instanceof Role ? $role : RoleProxy::findByName($role, $this->getDefaultGuardName());
+            if (null === $result) {
+                throw RoleDoesNotExist::named($role);
             }
 
-            return RoleProxy::findByName($role, $this->getDefaultGuardName());
+            return $result;
         }, $roles);
 
         return $query->whereHas('roles', function ($query) use ($roles) {
@@ -93,16 +86,18 @@ trait HasRoles
         });
     }
 
-    /**
-     * @param string|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
-     *
-     * @return array
-     */
     protected function convertToPermissionModels(string|Permission ...$permissions): array
     {
         return array_filter(
             array_map(
-                fn (string|Permission $permission) => is_string($permission) ? PermissionProxy::findByName($permission, $this->getDefaultGuardName()) : $permission,
+                function (string|Permission $permission) {
+                    $result = is_string($permission) ? PermissionProxy::findByName($permission, $this->getDefaultGuardName()) : $permission;
+                    if (null === $result) {
+                        throw PermissionDoesNotExist::create($permission, $this->getDefaultGuardName());
+                    }
+
+                    return $result;
+                },
                 $permissions
             )
         );
@@ -266,19 +261,12 @@ trait HasRoles
         return $roles->intersect($this->roles->pluck('name')) == $roles;
     }
 
-    /**
-     * Determine if the model may perform the given permission.
-     *
-     * @param string|Permission $permission
-     * @param string|null $guardName
-     *
-     * @return bool
-     */
-    public function hasPermissionTo($permission, ?string $guardName = null): bool
+    public function hasPermissionTo(string|Permission $permission, ?string $guardName = null): bool
     {
         if (is_string($permission)) {
-            if (null === $permission = PermissionProxy::findByName($permission, $guardName ?? $this->getDefaultGuardName())) {
-                return false;
+            $name = $permission;
+            if (null === $permission = PermissionProxy::findByName($name, $guardName ?? $this->getDefaultGuardName())) {
+                throw PermissionDoesNotExist::create($name, $guardName ?? $this->getDefaultGuardName());
             }
         }
 
@@ -374,17 +362,19 @@ trait HasRoles
         return $this->roles->pluck('name');
     }
 
-    protected function getStoredRole($role): Role
+    protected function getStoredRole(string|int|Role $role): Role
     {
-        if (is_numeric($role)) {
-            return RoleProxy::findById($role, $this->getDefaultGuardName());
+        $result = match (true) {
+            $role instanceof Role => $role,
+            is_numeric($role) => RoleProxy::findById($role, $this->getDefaultGuardName()),
+            default => RoleProxy::findByName($role, $this->getDefaultGuardName()),
+        };
+
+        if (null === $result) {
+            throw is_numeric($role) ? RoleDoesNotExist::withId((int) $role) : RoleDoesNotExist::named($role);
         }
 
-        if (is_string($role)) {
-            return RoleProxy::findByName($role, $this->getDefaultGuardName());
-        }
-
-        return $role;
+        return $result;
     }
 
     protected function convertPipeToArray(string $pipeString)
