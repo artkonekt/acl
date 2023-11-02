@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Test;
 
+use Illuminate\Database\Schema\Blueprint;
 use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Models\Role;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Providers\ModuleServiceProvider;
 use Konekt\Concord\ConcordServiceProvider;
-use Illuminate\Database\Schema\Blueprint;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -37,6 +39,21 @@ abstract class TestCase extends Orchestra
         $this->testAdmin = Admin::first();
         $this->testAdminRole = Role::find(3);
         $this->testAdminPermission = Permission::find(3);
+    }
+
+    public function refreshTestUser()
+    {
+        $this->testUser = $this->testUser->fresh();
+    }
+
+    public function refreshTestAdmin()
+    {
+        $this->testAdmin = $this->testAdmin->fresh();
+    }
+
+    public function refreshTestUserPermission()
+    {
+        $this->testUserPermission = $this->testUserPermission->fresh();
     }
 
     protected function getPackageProviders($app)
@@ -78,7 +95,7 @@ abstract class TestCase extends Orchestra
             $table->string('email');
         });
 
-        include_once __DIR__.'/../src/resources/database/migrations/2017_05_31_113121_create_acl_tables.php';
+        include_once __DIR__ . '/../src/resources/database/migrations/2017_05_31_113121_create_acl_tables.php';
 
         (new \CreateAclTables())->up();
 
@@ -95,21 +112,6 @@ abstract class TestCase extends Orchestra
     protected function reloadPermissions()
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
-    }
-
-    public function refreshTestUser()
-    {
-        $this->testUser = $this->testUser->fresh();
-    }
-
-    public function refreshTestAdmin()
-    {
-        $this->testAdmin = $this->testAdmin->fresh();
-    }
-
-    public function refreshTestUserPermission()
-    {
-        $this->testUserPermission = $this->testUserPermission->fresh();
     }
 
     protected function resolveApplicationConfiguration($app)

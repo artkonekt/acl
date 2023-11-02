@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Traits;
 
 use Illuminate\Support\Collection;
 use Konekt\Acl\Contracts\Permission;
+use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 use Konekt\Acl\Guard;
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\PermissionRegistrar;
-use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 
 trait HasPermissions
 {
@@ -65,6 +67,14 @@ trait HasPermissions
     }
 
     /**
+     * Forget the cached permissions.
+     */
+    public function forgetCachedPermissions()
+    {
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+    }
+
+    /**
      * @param string|array|Permission|\Illuminate\Support\Collection $permissions
      *
      * @return Permission|Permission|\Illuminate\Support\Collection
@@ -104,13 +114,5 @@ trait HasPermissions
     protected function getDefaultGuardName(): string
     {
         return Guard::getDefaultName($this);
-    }
-
-    /**
-     * Forget the cached permissions.
-     */
-    public function forgetCachedPermissions()
-    {
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

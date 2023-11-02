@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Commands;
 
 use Illuminate\Console\Command;
@@ -7,8 +9,8 @@ use Konekt\Acl\Contracts\Permission as PermissionContract;
 
 class CreatePermission extends Command
 {
-    protected $signature = 'acl:create-permission 
-                {name : The name of the permission} 
+    protected $signature = 'acl:create-permission
+                {name : The name of the permission}
                 {guard? : The name of the guard}';
 
     protected $description = 'Create a permission';
@@ -18,7 +20,7 @@ class CreatePermission extends Command
         $permissionClass = app(PermissionContract::class);
 
         $permission = $permissionClass::create([
-            'name'       => $this->argument('name'),
+            'name' => $this->argument('name'),
             'guard_name' => $this->argument('guard'),
         ]);
 

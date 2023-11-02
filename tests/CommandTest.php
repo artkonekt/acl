@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Test;
 
 use Artisan;
-use Konekt\Acl\Models\Role;
 use Konekt\Acl\Models\Permission;
+use Konekt\Acl\Models\Role;
 use Konekt\Acl\Test\Concerns\InteractsWithAclCache;
 
 class CommandTest extends TestCase
@@ -30,7 +32,7 @@ class CommandTest extends TestCase
     public function it_can_create_a_role_with_a_specific_guard()
     {
         Artisan::call('acl:create-role', [
-            'name'  => 'new-role',
+            'name' => 'new-role',
             'guard' => 'api',
         ]);
 
@@ -51,7 +53,7 @@ class CommandTest extends TestCase
     public function it_can_create_a_permission_with_a_specific_guard()
     {
         Artisan::call('acl:create-permission', [
-            'name'  => 'new-permission',
+            'name' => 'new-permission',
             'guard' => 'api',
         ]);
 

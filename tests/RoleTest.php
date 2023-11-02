@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Test;
 
-use Konekt\Acl\Contracts\Role;
-use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
-use Konekt\Acl\Exceptions\RoleAlreadyExists;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Exceptions\RoleAlreadyExists;
+use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\Models\RoleProxy;
 
@@ -195,7 +196,6 @@ class RoleTest extends TestCase
 
         $this->assertTrue($this->testUserRole->hasPermissionTo('another-permission'));
     }
-
 
     /** @test */
     public function it_throws_an_exception_when_a_permission_of_the_wrong_guard_is_passed_in()

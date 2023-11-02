@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Traits;
 
-use Illuminate\Support\Collection;
-use Konekt\Acl\Contracts\Role;
 use Illuminate\Database\Eloquent\Builder;
-use Konekt\Acl\Contracts\Permission;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Collection;
+use Konekt\Acl\Contracts\Permission;
+use Konekt\Acl\Contracts\Role;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Models\PermissionProxy;
@@ -84,23 +86,6 @@ trait HasRoles
                 }
             });
         });
-    }
-
-    protected function convertToPermissionModels(string|Permission ...$permissions): array
-    {
-        return array_filter(
-            array_map(
-                function (string|Permission $permission) {
-                    $result = is_string($permission) ? PermissionProxy::findByName($permission, $this->getDefaultGuardName()) : $permission;
-                    if (null === $result) {
-                        throw PermissionDoesNotExist::create($permission, $this->getDefaultGuardName());
-                    }
-
-                    return $result;
-                },
-                $permissions
-            )
-        );
     }
 
     public function scopeHavingPermission(Builder $query, string|Permission $permission): Builder
@@ -296,18 +281,6 @@ trait HasRoles
     }
 
     /**
-     * Determine if the model has, via roles, the given permission.
-     *
-     * @param Permission $permission
-     *
-     * @return bool
-     */
-    protected function hasPermissionViaRole(Permission $permission): bool
-    {
-        return $this->hasRole($permission->roles);
-    }
-
-    /**
      * Determine if the model has the given permission.
      *
      * @param string|Permission $permission
@@ -362,6 +335,35 @@ trait HasRoles
         return $this->roles->pluck('name');
     }
 
+    protected function convertToPermissionModels(string|Permission ...$permissions): array
+    {
+        return array_filter(
+            array_map(
+                function (string|Permission $permission) {
+                    $result = is_string($permission) ? PermissionProxy::findByName($permission, $this->getDefaultGuardName()) : $permission;
+                    if (null === $result) {
+                        throw PermissionDoesNotExist::create($permission, $this->getDefaultGuardName());
+                    }
+
+                    return $result;
+                },
+                $permissions
+            )
+        );
+    }
+
+    /**
+     * Determine if the model has, via roles, the given permission.
+     *
+     * @param Permission $permission
+     *
+     * @return bool
+     */
+    protected function hasPermissionViaRole(Permission $permission): bool
+    {
+        return $this->hasRole($permission->roles);
+    }
+
     protected function getStoredRole(string|int|Role $role): Role
     {
         $result = match (true) {
@@ -386,7 +388,7 @@ trait HasRoles
         }
 
         $quoteCharacter = substr($pipeString, 0, 1);
-        $endCharacter   = substr($quoteCharacter, -1, 1);
+        $endCharacter = substr($quoteCharacter, -1, 1);
 
         if ($quoteCharacter !== $endCharacter) {
             return explode('|', $pipeString);

@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Test;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Konekt\Acl\Exceptions\UnauthorizedException;
-use Konekt\Acl\Http\Middleware\RoleMiddleware;
 use Konekt\Acl\Http\Middleware\PermissionMiddleware;
+use Konekt\Acl\Http\Middleware\RoleMiddleware;
 
 class MiddlewareTest extends TestCase
 {
     protected $roleMiddleware;
+
     protected $permissionMiddleware;
 
     public function setUp(): void

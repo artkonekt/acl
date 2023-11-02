@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Commands;
 
 use Illuminate\Console\Command;
@@ -18,7 +20,7 @@ class CreateRole extends Command
         $roleClass = app(RoleContract::class);
 
         $role = $roleClass::create([
-            'name'       => $this->argument('name'),
+            'name' => $this->argument('name'),
             'guard_name' => $this->argument('guard'),
         ]);
 

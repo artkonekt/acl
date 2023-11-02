@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Konekt\Acl\Contracts\Permission as PermissionContract;
+use Konekt\Acl\Contracts\Role as RoleContract;
+use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Exceptions\RoleAlreadyExists;
 use Konekt\Acl\Guard;
 use Konekt\Acl\Traits\HasPermissions;
-use Konekt\Acl\Exceptions\GuardDoesNotMatch;
-use Konekt\Acl\Exceptions\RoleAlreadyExists;
-use Konekt\Acl\Contracts\Role as RoleContract;
 use Konekt\Acl\Traits\RefreshesPermissionCache;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model implements RoleContract
 {

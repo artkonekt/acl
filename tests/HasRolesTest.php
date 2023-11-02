@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Test;
 
-use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Models\RoleProxy;
 
 class HasRolesTest extends TestCase

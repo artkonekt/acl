@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Models;
 
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Collection;
+use Konekt\Acl\Contracts\Permission as PermissionContract;
+use Konekt\Acl\Exceptions\PermissionAlreadyExists;
 use Konekt\Acl\Guard;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Traits\HasRoles;
 use Konekt\Acl\Traits\RefreshesPermissionCache;
-use Konekt\Acl\Exceptions\PermissionAlreadyExists;
-use Konekt\Acl\Contracts\Permission as PermissionContract;
 
 class Permission extends Model implements PermissionContract
 {

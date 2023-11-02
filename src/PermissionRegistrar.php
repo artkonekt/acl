@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl;
 
 use Illuminate\Cache\CacheManager;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Auth\Access\Gate;
-use Konekt\Acl\Models\PermissionProxy;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Collection;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
+use Konekt\Acl\Models\PermissionProxy;
 
 class PermissionRegistrar
 {
-    const CACHE_KEY = 'konekt.acl.cache';
+    public const CACHE_KEY = 'konekt.acl.cache';
 
     /** @var \Illuminate\Contracts\Auth\Access\Gate */
     protected $gate;
@@ -21,7 +23,7 @@ class PermissionRegistrar
 
     public function __construct(Gate $gate, CacheManager $cache)
     {
-        $this->gate  = $gate;
+        $this->gate = $gate;
         $this->cache = $cache;
     }
 

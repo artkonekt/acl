@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Test;
 
 use Illuminate\Contracts\Auth\Access\Gate;

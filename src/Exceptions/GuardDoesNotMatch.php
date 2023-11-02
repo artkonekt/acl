@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Exceptions;
 
-use InvalidArgumentException;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class GuardDoesNotMatch extends InvalidArgumentException
 {

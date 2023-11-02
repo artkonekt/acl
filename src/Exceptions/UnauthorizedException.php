@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Exceptions;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -16,10 +18,10 @@ class UnauthorizedException extends HttpException
 
         if (config('konekt.acl.display_permission_in_exception')) {
             $permStr = implode(', ', $roles);
-            $message = 'User does not have the right roles. Necessary roles are '.$permStr;
+            $message = 'User does not have the right roles. Necessary roles are ' . $permStr;
         }
 
-        $exception                = new static(403, $message, null, []);
+        $exception = new static(403, $message, null, []);
         $exception->requiredRoles = $roles;
 
         return $exception;
@@ -31,10 +33,10 @@ class UnauthorizedException extends HttpException
 
         if (config('permission.display_permission_in_exception')) {
             $permStr = implode(', ', $permissions);
-            $message = 'User does not have the right permissions. Necessary permissions are '.$permStr;
+            $message = 'User does not have the right permissions. Necessary permissions are ' . $permStr;
         }
 
-        $exception                      = new static(403, $message, null, []);
+        $exception = new static(403, $message, null, []);
         $exception->requiredPermissions = $permissions;
 
         return $exception;

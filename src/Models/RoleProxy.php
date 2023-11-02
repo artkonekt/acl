@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Contains the RoleProxy class.
  *
@@ -8,7 +10,6 @@
  * @since       2017-06-07
  *
  */
-
 
 namespace Konekt\Acl\Models;
 

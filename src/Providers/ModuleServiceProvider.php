@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Providers;
 
+use Illuminate\View\Compilers\BladeCompiler;
 use Konekt\Acl\Commands\ClearCache;
 use Konekt\Acl\Commands\CreatePermission;
 use Konekt\Acl\Commands\CreateRole;
@@ -9,7 +12,6 @@ use Konekt\Acl\Models\Permission;
 use Konekt\Acl\Models\Role;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Concord\BaseModuleServiceProvider;
-use Illuminate\View\Compilers\BladeCompiler;
 
 class ModuleServiceProvider extends BaseModuleServiceProvider
 {
@@ -48,7 +50,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
     {
         $this->app->afterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $bladeCompiler->directive('role', function ($arguments) {
-                list($role, $guard) = explode(',', $arguments.',');
+                [$role, $guard] = explode(',', $arguments . ',');
 
                 return "<?php if(auth({$guard})->check() && auth({$guard})->user()->hasRole({$role})): ?>";
             });
@@ -57,7 +59,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
             });
 
             $bladeCompiler->directive('hasrole', function ($arguments) {
-                list($role, $guard) = explode(',', $arguments.',');
+                [$role, $guard] = explode(',', $arguments . ',');
 
                 return "<?php if(auth({$guard})->check() && auth({$guard})->user()->hasRole({$role})): ?>";
             });
@@ -66,7 +68,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
             });
 
             $bladeCompiler->directive('hasanyrole', function ($arguments) {
-                list($roles, $guard) = explode(',', $arguments.',');
+                [$roles, $guard] = explode(',', $arguments . ',');
 
                 return "<?php if(auth({$guard})->check() && auth({$guard})->user()->hasAnyRole({$roles})): ?>";
             });
@@ -75,7 +77,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
             });
 
             $bladeCompiler->directive('hasallroles', function ($arguments) {
-                list($roles, $guard) = explode(',', $arguments.',');
+                [$roles, $guard] = explode(',', $arguments . ',');
 
                 return "<?php if(auth({$guard})->check() && auth({$guard})->user()->hasAllRoles({$roles})): ?>";
             });

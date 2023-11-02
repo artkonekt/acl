@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl;
 
 use Illuminate\Support\Collection;
@@ -12,7 +14,7 @@ class Guard
      * @param $model
      * @return Collection
      */
-    public static function getNames($model) : Collection
+    public static function getNames($model): Collection
     {
         if (is_object($model)) {
             $guardName = $model->guard_name ?? null;

@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Traits;
 
-use Illuminate\Database\Eloquent\Model;
 use Konekt\Acl\PermissionRegistrar;
 
 trait RefreshesPermissionCache

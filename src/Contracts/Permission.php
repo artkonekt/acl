@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Konekt\Acl\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
