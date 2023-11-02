@@ -10,7 +10,6 @@ use Konekt\Acl\Guard;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Traits\HasRoles;
 use Konekt\Acl\Traits\RefreshesPermissionCache;
-use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 use Konekt\Acl\Exceptions\PermissionAlreadyExists;
 use Konekt\Acl\Contracts\Permission as PermissionContract;
 
@@ -39,9 +38,6 @@ class Permission extends Model implements PermissionContract
         return static::query()->create($attributes);
     }
 
-    /**
-     * A permission can be applied to roles.
-     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(RoleProxy::modelClass(), 'role_permissions');
@@ -61,38 +57,15 @@ class Permission extends Model implements PermissionContract
         );
     }
 
-    /**
-     * Find a permission by its name (and optionally guardName).
-     *
-     * @param string $name
-     * @param string|null $guardName
-     *
-     * @throws \Konekt\Acl\Exceptions\PermissionDoesNotExist
-     *
-     * @return \Konekt\Acl\Contracts\Permission
-     */
-    public static function findByName(string $name, $guardName = null): PermissionContract
+    public static function findByName(string $name, ?string $guardName = null): ?PermissionContract
     {
-        $guardName = $guardName ?? Guard::getDefaultName(static::class);
-
-        $permission = static::getPermissions()->where('name', $name)->where('guard_name', $guardName)->first();
-
-        if (! $permission) {
-            throw PermissionDoesNotExist::create($name, $guardName);
-        }
-
-        return $permission;
+        return static::getPermissions()
+            ->where('name', $name)
+            ->where('guard_name', $guardName ?? Guard::getDefaultName(static::class))
+            ->first();
     }
 
-    /**
-     * Find or create permission by its name (and optionally guardName).
-     *
-     * @param string $name
-     * @param string|null $guardName
-     *
-     * @return \Konekt\Acl\Contracts\Permission
-     */
-    public static function findOrCreate(string $name, $guardName = null): PermissionContract
+    public static function findOrCreate(string $name, ?string $guardName = null): PermissionContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
 

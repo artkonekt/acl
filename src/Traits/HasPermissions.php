@@ -3,6 +3,8 @@
 namespace Konekt\Acl\Traits;
 
 use Illuminate\Support\Collection;
+use Konekt\Acl\Contracts\Permission;
+use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 use Konekt\Acl\Guard;
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\PermissionRegistrar;
@@ -13,23 +15,23 @@ trait HasPermissions
     /**
      * Grant the given permission(s) to a role.
      *
-     * @param string|array|\Konekt\Acl\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     * @param string|array|Permission|\Illuminate\Support\Collection $permissions
      *
      * @return $this
      */
-    public function givePermissionTo(...$permissions)
+    public function givePermissionTo(string|Permission ...$permissions)
     {
-        $permissions = collect($permissions)
-            ->flatten()
-            ->map(function ($permission) {
-                return $this->getStoredPermission($permission);
-            })
-            ->each(function ($permission) {
-                $this->ensureModelSharesGuard($permission);
-            })
-            ->all();
+        $normalized = [];
+        foreach ($permissions as $permission) {
+            if (null === $model = (is_string($permission) ? $this->getStoredPermission($permission) : $permission)) {
+                throw PermissionDoesNotExist::create($permission);
+            }
 
-        $this->permissions()->saveMany($permissions);
+            $this->ensureModelSharesGuard($model);
+            $normalized[] = $model;
+        }
+
+        $this->permissions()->saveMany($normalized);
 
         $this->forgetCachedPermissions();
 
@@ -39,7 +41,7 @@ trait HasPermissions
     /**
      * Remove all current permissions and set the given ones.
      *
-     * @param string|array|\Konekt\Acl\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     * @param string|array|Permission|\Illuminate\Support\Collection $permissions
      *
      * @return $this
      */
@@ -53,7 +55,7 @@ trait HasPermissions
     /**
      * Revoke the given permission.
      *
-     * @param \Konekt\Acl\Contracts\Permission|\Konekt\Acl\Contracts\Permission[]|string|string[] $permission
+     * @param Permission|Permission[]|string|string[] $permission
      *
      * @return $this
      */
@@ -67,9 +69,9 @@ trait HasPermissions
     }
 
     /**
-     * @param string|array|\Konekt\Acl\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     * @param string|array|Permission|\Illuminate\Support\Collection $permissions
      *
-     * @return \Konekt\Acl\Contracts\Permission|\Konekt\Acl\Contracts\Permission|\Illuminate\Support\Collection
+     * @return Permission|Permission|\Illuminate\Support\Collection
      */
     protected function getStoredPermission($permissions)
     {
@@ -87,7 +89,7 @@ trait HasPermissions
     }
 
     /**
-     * @param \Konekt\Acl\Contracts\Permission|\Konekt\Acl\Contracts\Role $roleOrPermission
+     * @param Permission|\Konekt\Acl\Contracts\Role $roleOrPermission
      *
      * @throws \Konekt\Acl\Exceptions\GuardDoesNotMatch
      */

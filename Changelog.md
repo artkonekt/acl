@@ -5,6 +5,13 @@
 - Dropped Laravel 9 support
 - Dropped PHP 8.0 & 8.1 support
 - Added PHP 8.3 support
+- Added the `HasRoles::havingPermission()` query scope that accept a single `string|Permission` parameter
+- BC: The 'Permission::findByName()' method no longer throws an exception when a permission was not found, but returns NULL instead
+- BC: The 'Role::findByName()' method no longer throws an exception when a role was not found, but returns NULL instead
+- BC: The 'Role::findById()' method no longer throws an exception when a role was not found, but returns NULL instead
+- BC: The `givePermissionTo()` method no longer accepts an array or a Collection parameter, only a variadic `string|Permission` parameter list
+- BC: The `HasRoles::permission()` query scope has been renamed to `havingPermissions()`
+- BC: The renamed `havingPermissions()` scope no longer accepts and array or Collection, only a variadic `string|Permission` parameter list
 
 # 1.x Series
 

@@ -228,9 +228,6 @@ $user->givePermissionTo('edit articles');
 
 // You can also give multiple permission at once
 $user->givePermissionTo('edit articles', 'delete articles');
-
-// You may also pass an array
-$user->givePermissionTo(['edit articles', 'delete articles']);
 ```
 
 A permission can be revoked from a user:

@@ -18,9 +18,9 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
         Role::class
     ];
 
-    protected $permissionLoader;
+    protected PermissionRegistrar $permissionLoader;
 
-    public function boot()
+    public function boot(): void
     {
         parent::boot();
 
@@ -37,7 +37,7 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
         $this->permissionLoader->registerPermissions();
     }
 
-    public function register()
+    public function register(): void
     {
         parent::register();
 

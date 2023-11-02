@@ -97,7 +97,7 @@ class CacheTest extends TestCase
     /** @test */
     public function has_permission_to_should_use_the_cache()
     {
-        $this->testUserRole->givePermissionTo(['edit-articles', 'edit-news']);
+        $this->testUserRole->givePermissionTo('edit-articles', 'edit-news');
         $this->testUser->assignRole('testRole');
 
         $this->resetQueryCount();

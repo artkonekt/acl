@@ -3,9 +3,9 @@
 namespace Konekt\Acl\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Konekt\Acl\Contracts\Permission as PermissionContract;
 use Konekt\Acl\Guard;
 use Konekt\Acl\Traits\HasPermissions;
-use Konekt\Acl\Exceptions\RoleDoesNotExist;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\RoleAlreadyExists;
 use Konekt\Acl\Contracts\Role as RoleContract;
@@ -38,9 +38,6 @@ class Role extends Model implements RoleContract
         return static::query()->create($attributes);
     }
 
-    /**
-     * A role may be given various permissions.
-     */
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(PermissionProxy::modelClass(), 'role_permissions');
@@ -60,58 +57,31 @@ class Role extends Model implements RoleContract
         );
     }
 
-    /**
-     * Find a role by its name and guard name.
-     *
-     * @param string $name
-     * @param string|null $guardName
-     *
-     * @return \Konekt\Acl\Contracts\Role|\Konekt\Acl\Models\Role
-     *
-     * @throws \Konekt\Acl\Exceptions\RoleDoesNotExist
-     */
-    public static function findByName(string $name, $guardName = null): RoleContract
+    public static function findByName(string $name, ?string $guardName = null): ?RoleContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
 
-        $role = static::where('name', $name)->where('guard_name', $guardName)->first();
-
-        if (! $role) {
-            throw RoleDoesNotExist::named($name);
-        }
-
-        return $role;
+        return static::where('name', $name)
+            ->where('guard_name', $guardName ?? Guard::getDefaultName(static::class))
+            ->first();
     }
 
-    public static function findById(int $id, $guardName = null): RoleContract
+    public static function findById(int $id, ?string $guardName = null): ?RoleContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
 
-        $role = static::where('id', $id)->where('guard_name', $guardName)->first();
-
-        if (! $role) {
-            throw RoleDoesNotExist::withId($id);
-        }
-
-        return $role;
+        return static::where('id', $id)
+            ->where('guard_name', $guardName ?? Guard::getDefaultName(static::class))
+            ->first();
     }
 
-    /**
-     * Determine if the user may perform the given permission.
-     *
-     * @param string|Permission $permission
-     *
-     * @return bool
-     *
-     * @throws \Konekt\Acl\Exceptions\GuardDoesNotMatch
-     */
-    public function hasPermissionTo($permission): bool
+    public function hasPermissionTo(string|PermissionContract $permission): bool
     {
         if (is_string($permission)) {
             $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
         }
 
-        if (! $this->getGuardNames()->contains($permission->guard_name)) {
+        if ($this->getGuardNames()->doesntContain($permission->guard_name)) {
             throw GuardDoesNotMatch::create($permission->guard_name, $this->getGuardNames());
         }
 

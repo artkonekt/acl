@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\Models\RoleProxy;
 
+/**
+ * @method static havingPermission(string|Permission $permission): Builder
+ * @method static havingPermissions(string|Permission ...$permissions): Builder
+ */
 trait HasRoles
 {
     use HasPermissions;
@@ -94,34 +98,24 @@ trait HasRoles
      *
      * @return array
      */
-    protected function convertToPermissionModels($permissions): array
+    protected function convertToPermissionModels(string|Permission ...$permissions): array
     {
-        if ($permissions instanceof Collection) {
-            $permissions = $permissions->all();
-        }
-
-        $permissions = Arr::wrap($permissions);
-
-        return array_map(function ($permission) {
-            if ($permission instanceof Permission) {
-                return $permission;
-            }
-
-            return app(Permission::class)->findByName($permission, $this->getDefaultGuardName());
-        }, $permissions);
+        return array_filter(
+            array_map(
+                fn (string|Permission $permission) => is_string($permission) ? PermissionProxy::findByName($permission, $this->getDefaultGuardName()) : $permission,
+                $permissions
+            )
+        );
     }
 
-    /**
-     * Scope the model query to certain permissions only.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|array|\Konekt\Acl\Contracts\Permission|\Illuminate\Support\Collection $permissions
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopePermission(Builder $query, $permissions): Builder
+    public function scopeHavingPermission(Builder $query, string|Permission $permission): Builder
     {
-        $permissions = $this->convertToPermissionModels($permissions);
+        return $this->scopeHavingPermissions($query, $permission);
+    }
+
+    public function scopeHavingPermissions(Builder $query, string|Permission ...$permissions): Builder
+    {
+        $permissions = $this->convertToPermissionModels(...$permissions);
 
         $rolesWithPermissions = array_unique(array_reduce($permissions, function ($result, $permission) {
             return array_merge($result, $permission->roles->all());
@@ -275,18 +269,17 @@ trait HasRoles
     /**
      * Determine if the model may perform the given permission.
      *
-     * @param string|\Konekt\Acl\Contracts\Permission $permission
+     * @param string|Permission $permission
      * @param string|null $guardName
      *
      * @return bool
      */
-    public function hasPermissionTo($permission, $guardName = null): bool
+    public function hasPermissionTo($permission, ?string $guardName = null): bool
     {
         if (is_string($permission)) {
-            $permission = PermissionProxy::findByName(
-                $permission,
-                $guardName ?? $this->getDefaultGuardName()
-            );
+            if (null === $permission = PermissionProxy::findByName($permission, $guardName ?? $this->getDefaultGuardName())) {
+                return false;
+            }
         }
 
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
@@ -317,7 +310,7 @@ trait HasRoles
     /**
      * Determine if the model has, via roles, the given permission.
      *
-     * @param \Konekt\Acl\Contracts\Permission $permission
+     * @param Permission $permission
      *
      * @return bool
      */
@@ -329,11 +322,11 @@ trait HasRoles
     /**
      * Determine if the model has the given permission.
      *
-     * @param string|\Konekt\Acl\Contracts\Permission $permission
+     * @param string|Permission $permission
      *
      * @return bool
      */
-    public function hasDirectPermission($permission): bool
+    public function hasDirectPermission(string|Permission $permission): bool
     {
         if (is_string($permission)) {
             $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());

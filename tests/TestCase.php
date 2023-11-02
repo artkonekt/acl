@@ -2,8 +2,8 @@
 
 namespace Konekt\Acl\Test;
 
-use Konekt\Acl\Models\PermissionProxy;
-use Konekt\Acl\Models\RoleProxy;
+use Konekt\Acl\Models\Permission;
+use Konekt\Acl\Models\Role;
 use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Providers\ModuleServiceProvider;
 use Konekt\Concord\ConcordServiceProvider;
@@ -12,23 +12,17 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
-    /** @var \Konekt\Acl\Test\User */
-    protected $testUser;
+    protected User $testUser;
 
-    /** @var \Konekt\Acl\Test\Admin */
-    protected $testAdmin;
+    protected Admin $testAdmin;
 
-    /** @var \Konekt\Acl\Models\Role */
-    protected $testUserRole;
+    protected Role $testUserRole;
 
-    /** @var \Konekt\Acl\Models\Role */
-    protected $testAdminRole;
+    protected Role $testAdminRole;
 
-    /** @var \Konekt\Acl\Models\Permission */
-    protected $testUserPermission;
+    protected Permission $testUserPermission;
 
-    /** @var \Konekt\Acl\Models\Permission */
-    protected $testAdminPermission;
+    protected Permission $testAdminPermission;
 
     public function setUp(): void
     {
@@ -36,42 +30,32 @@ abstract class TestCase extends Orchestra
 
         $this->setUpDatabase($this->app);
 
-        $this->testUser           = User::first();
-        $this->testUserRole       = RoleProxy::find(1);
-        $this->testUserPermission = PermissionProxy::find(1);
+        $this->testUser = User::first();
+        $this->testUserRole = Role::find(1);
+        $this->testUserPermission = Permission::find(1);
 
-        $this->testAdmin           = Admin::first();
-        $this->testAdminRole       = RoleProxy::find(3);
-        $this->testAdminPermission = PermissionProxy::find(3);
+        $this->testAdmin = Admin::first();
+        $this->testAdminRole = Role::find(3);
+        $this->testAdminPermission = Permission::find(3);
     }
 
-    /**
-     * @param \Illuminate\Foundation\Application $app
-     *
-     * @return array
-     */
     protected function getPackageProviders($app)
     {
         return [
-            ConcordServiceProvider::class
+            ConcordServiceProvider::class,
         ];
     }
 
-    /**
-     * Set up the environment.
-     *
-     * @param \Illuminate\Foundation\Application $app
-     */
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
-        $app['config']->set('view.paths', [__DIR__.'/resources/views']);
+        $app['config']->set('view.paths', [__DIR__ . '/resources/views']);
 
         // Set-up admin guard
         $app['config']->set('auth.guards.admin', ['driver' => 'session', 'provider' => 'admins']);
@@ -81,11 +65,6 @@ abstract class TestCase extends Orchestra
         $app['config']->set('auth.providers.users.model', User::class);
     }
 
-    /**
-     * Set up the database.
-     *
-     * @param \Illuminate\Foundation\Application $app
-     */
     protected function setUpDatabase($app)
     {
         $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
@@ -105,54 +84,39 @@ abstract class TestCase extends Orchestra
 
         User::create(['email' => 'test@user.com']);
         Admin::create(['email' => 'admin@user.com']);
-        RoleProxy::create(['name' => 'testRole']);
-        RoleProxy::create(['name' => 'testRole2']);
-        RoleProxy::create(['name' => 'testAdminRole', 'guard_name' => 'admin']);
-        PermissionProxy::create(['name' => 'edit-articles']);
-        PermissionProxy::create(['name' => 'edit-news']);
-        PermissionProxy::create(['name' => 'admin-permission', 'guard_name' => 'admin']);
+        Role::create(['name' => 'testRole']);
+        Role::create(['name' => 'testRole2']);
+        Role::create(['name' => 'testAdminRole', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'edit-articles']);
+        Permission::create(['name' => 'edit-news']);
+        Permission::create(['name' => 'admin-permission', 'guard_name' => 'admin']);
     }
 
-    /**
-     * Reload the permissions.
-     */
     protected function reloadPermissions()
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    /**
-     * Refresh the testUser.
-     */
     public function refreshTestUser()
     {
         $this->testUser = $this->testUser->fresh();
     }
 
-    /**
-     * Refresh the testAdmin.
-     */
     public function refreshTestAdmin()
     {
         $this->testAdmin = $this->testAdmin->fresh();
     }
 
-    /**
-     * Refresh the testUserPermission.
-     */
     public function refreshTestUserPermission()
     {
         $this->testUserPermission = $this->testUserPermission->fresh();
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function resolveApplicationConfiguration($app)
     {
         parent::resolveApplicationConfiguration($app);
         $app['config']->set('concord.modules', [
-            ModuleServiceProvider::class
+            ModuleServiceProvider::class,
         ]);
     }
 }
