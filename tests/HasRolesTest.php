@@ -64,7 +64,7 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_assign_multiple_roles_at_once()
     {
-        $this->testUser->assignRole($this->testUserRole->id, 'testRole2');
+        $this->testUser->assignRoles($this->testUserRole->id, 'testRole2');
 
         $this->assertTrue($this->testUser->hasRole('testRole'));
 
@@ -74,10 +74,9 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_assign_multiple_roles_using_an_array()
     {
-        $this->testUser->assignRole([$this->testUserRole->id, 'testRole2']);
+        $this->testUser->assignRoles($this->testUserRole->id, 'testRole2');
 
         $this->assertTrue($this->testUser->hasRole('testRole'));
-
         $this->assertTrue($this->testUser->hasRole('testRole2'));
     }
 
@@ -109,7 +108,6 @@ class HasRolesTest extends TestCase
     public function it_can_sync_roles_from_a_string()
     {
         $this->testUser->assignRole('testRole');
-
         $this->testUser->syncRoles('testRole2');
 
         $this->assertFalse($this->testUser->hasRole('testRole'));
@@ -135,28 +133,17 @@ class HasRolesTest extends TestCase
         $this->testUser->syncRoles('testRole', 'testRole2');
 
         $this->assertTrue($this->testUser->hasRole('testRole'));
-
         $this->assertTrue($this->testUser->hasRole('testRole2'));
     }
 
     /** @test */
-    public function it_can_sync_multiple_roles_from_an_array()
-    {
-        $this->testUser->syncRoles(['testRole', 'testRole2']);
-
-        $this->assertTrue($this->testUser->hasRole('testRole'));
-
-        $this->assertTrue($this->testUser->hasRole('testRole2'));
-    }
-
-    /** @test */
-    public function it_will_remove_all_roles_when_an_empty_array_is_passed_to_sync_roles()
+    public function it_will_remove_all_roles_when_no_argument_is_passed_to_sync_roles()
     {
         $this->testUser->assignRole('testRole');
 
         $this->testUser->assignRole('testRole2');
 
-        $this->testUser->syncRoles([]);
+        $this->testUser->syncRoles();
 
         $this->assertFalse($this->testUser->hasRole('testRole'));
 
@@ -415,7 +402,7 @@ class HasRolesTest extends TestCase
         RoleProxy::findByName('testRole2')->givePermissionTo('edit-news');
 
         $this->testUserRole->givePermissionTo('edit-articles');
-        $this->testUser->assignRole('testRole', 'testRole2');
+        $this->testUser->assignRoles('testRole', 'testRole2');
 
         $this->assertEquals(
             collect(['edit-articles', 'edit-news']),
@@ -440,7 +427,7 @@ class HasRolesTest extends TestCase
     /** @test */
     public function it_can_retrieve_role_names()
     {
-        $this->testUser->assignRole('testRole', 'testRole2');
+        $this->testUser->assignRoles('testRole', 'testRole2');
 
         $this->assertEquals(
             collect(['testRole', 'testRole2']),

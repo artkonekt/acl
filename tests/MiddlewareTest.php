@@ -83,7 +83,7 @@ class MiddlewareTest extends TestCase
     {
         Auth::login($this->testUser);
 
-        $this->testUser->assignRole(['testRole']);
+        $this->testUser->assignRole('testRole');
 
         $this->assertEquals(
             $this->runMiddleware(

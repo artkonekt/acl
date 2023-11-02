@@ -6,6 +6,7 @@ namespace Konekt\Acl\Traits;
 
 use Illuminate\Support\Collection;
 use Konekt\Acl\Contracts\Permission;
+use Konekt\Acl\Contracts\Role;
 use Konekt\Acl\Exceptions\GuardDoesNotMatch;
 use Konekt\Acl\Exceptions\PermissionDoesNotExist;
 use Konekt\Acl\Guard;
@@ -52,15 +53,12 @@ trait HasPermissions
         return $this;
     }
 
-    /**
-     * Forget the cached permissions.
-     */
-    public function forgetCachedPermissions()
+    public function forgetCachedPermissions(): void
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    protected function getStoredPermission(string|Permission $permission)
+    protected function getStoredPermission(string|Permission $permission): ?Permission
     {
         return is_string($permission) ?
             PermissionProxy::findByName($permission, $this->getDefaultGuardName())
@@ -76,11 +74,9 @@ trait HasPermissions
     }
 
     /**
-     * @param Permission|\Konekt\Acl\Contracts\Role $roleOrPermission
-     *
      * @throws \Konekt\Acl\Exceptions\GuardDoesNotMatch
      */
-    protected function ensureModelSharesGuard($roleOrPermission)
+    protected function ensureModelSharesGuard(Role|Permission $roleOrPermission): void
     {
         if (! $this->getGuardNames()->contains($roleOrPermission->guard_name)) {
             throw GuardDoesNotMatch::create($roleOrPermission->guard_name, $this->getGuardNames());

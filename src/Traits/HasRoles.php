@@ -15,6 +15,10 @@ use Konekt\Acl\Models\PermissionProxy;
 use Konekt\Acl\Models\RoleProxy;
 
 /**
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection $roles
+ * @property-read \Illuminate\Database\Eloquent\Collection $permissions
+ *
  * @method static havingPermission(string|Permission $permission): Builder
  * @method static havingPermissions(string|Permission ...$permissions): Builder
  * @method static havingRole(string|Role $role): Builder
@@ -24,7 +28,7 @@ trait HasRoles
 {
     use HasPermissions;
 
-    public static function bootHasRoles()
+    public static function bootHasRoles(): void
     {
         static::deleting(function ($model) {
             if (method_exists($model, 'isForceDeleting') && ! $model->isForceDeleting()) {
@@ -35,32 +39,14 @@ trait HasRoles
         });
     }
 
-    /**
-     * A model may have multiple roles.
-     */
     public function roles(): MorphToMany
     {
-        return $this->morphToMany(
-            RoleProxy::modelClass(),
-            'model',
-            'model_roles',
-            'model_id',
-            'role_id'
-        );
+        return $this->morphToMany(RoleProxy::modelClass(), 'model', 'model_roles', 'model_id', 'role_id');
     }
 
-    /**
-     * A model may have multiple direct permissions.
-     */
     public function permissions(): MorphToMany
     {
-        return $this->morphToMany(
-            PermissionProxy::modelClass(),
-            'model',
-            'model_permissions',
-            'model_id',
-            'permission_id'
-        );
+        return $this->morphToMany(PermissionProxy::modelClass(), 'model', 'model_permissions', 'model_id', 'permission_id');
     }
 
     public function scopeHavingRole(Builder $query, string|Role $role): Builder
@@ -122,14 +108,12 @@ trait HasRoles
         });
     }
 
-    /**
-     * Assign the given role to the model.
-     *
-     * @param array|string|\Konekt\Acl\Contracts\Role ...$roles
-     *
-     * @return $this
-     */
-    public function assignRole(...$roles)
+    public function assignRole(string|int|Role $role): static
+    {
+        return $this->assignRoles($role);
+    }
+
+    public function assignRoles(string|int|Role ...$roles): static
     {
         $roles = collect($roles)
             ->flatten()
@@ -148,38 +132,22 @@ trait HasRoles
         return $this;
     }
 
-    /**
-     * Revoke the given role from the model.
-     *
-     * @param string|\Konekt\Acl\Contracts\Role $role
-     */
-    public function removeRole($role)
+    public function removeRole(string|int|Role $role): void
     {
         $this->roles()->detach($this->getStoredRole($role));
     }
 
-    /**
-     * Remove all current roles and set the given ones.
-     *
-     * @param array|Role|string ...$roles
-     *
-     * @return $this
-     */
-    public function syncRoles(...$roles)
+    public function syncRoles(string|int|Role ...$roles): static
     {
         $this->roles()->detach();
 
-        return $this->assignRole($roles);
+        return $this->assignRoles(...$roles);
     }
 
     /**
      * Determine if the model has (one of) the given role(s).
-     *
-     * @param string|array|\Konekt\Acl\Contracts\Role|\Illuminate\Support\Collection $roles
-     *
-     * @return bool
      */
-    public function hasRole($roles): bool
+    public function hasRole(string|array|Role|Collection $roles): bool
     {
         if (is_string($roles) && false !== strpos($roles, '|')) {
             $roles = $this->convertPipeToArray($roles);
@@ -207,25 +175,17 @@ trait HasRoles
     }
 
     /**
-     * Determine if the model has any of the given role(s).
-     *
-     * @param string|array|\Konekt\Acl\Contracts\Role|\Illuminate\Support\Collection $roles
-     *
-     * @return bool
+     * Determine if the model has any of the given role(s). An alias to `hasRole()`
      */
-    public function hasAnyRole($roles): bool
+    public function hasAnyRole(string|array|Role|Collection $roles): bool
     {
         return $this->hasRole($roles);
     }
 
     /**
-     * Determine if the model has all of the given role(s).
-     *
-     * @param string|array|\Konekt\Acl\Contracts\Role|\Illuminate\Support\Collection $roles
-     *
-     * @return bool
+     * Determine if the model has all the given role(s).
      */
-    public function hasAllRoles($roles): bool
+    public function hasAllRoles(string|array|Role|Collection $roles): bool
     {
         if (is_string($roles) && false !== strpos($roles, '|')) {
             $roles = $this->convertPipeToArray($roles);
@@ -352,13 +312,6 @@ trait HasRoles
         );
     }
 
-    /**
-     * Determine if the model has, via roles, the given permission.
-     *
-     * @param Permission $permission
-     *
-     * @return bool
-     */
     protected function hasPermissionViaRole(Permission $permission): bool
     {
         return $this->hasRole($permission->roles);
@@ -379,7 +332,7 @@ trait HasRoles
         return $result;
     }
 
-    protected function convertPipeToArray(string $pipeString)
+    protected function convertPipeToArray(string $pipeString): string|array
     {
         $pipeString = trim($pipeString);
 

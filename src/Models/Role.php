@@ -72,7 +72,7 @@ class Role extends Model implements RoleContract
             ->first();
     }
 
-    public static function findById(int $id, ?string $guardName = null): ?RoleContract
+    public static function findById(int|string $id, ?string $guardName = null): ?RoleContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
 

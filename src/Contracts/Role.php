@@ -12,7 +12,7 @@ interface Role
 
     public static function findByName(string $name, ?string $guardName = null): ?self ;
 
-    public static function findById(int $id, ?string $guardName = null): ?self;
+    public static function findById(int|string $id, ?string $guardName = null): ?self;
 
     public function hasPermissionTo(string|Permission $permission): bool;
 
