@@ -31,7 +31,7 @@ class UnauthorizedException extends HttpException
     {
         $message = 'User does not have the right permissions.';
 
-        if (config('permission.display_permission_in_exception')) {
+        if (config('konekt.acl.display_permission_in_exception')) {
             $permStr = implode(', ', $permissions);
             $message = 'User does not have the right permissions. Necessary permissions are ' . $permStr;
         }

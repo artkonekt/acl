@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Konekt\Acl\Commands;
 
 use Illuminate\Console\Command;
-use Konekt\Acl\Contracts\Role as RoleContract;
+use Konekt\Acl\Models\RoleProxy;
 
 class CreateRole extends Command
 {
@@ -17,9 +17,7 @@ class CreateRole extends Command
 
     public function handle()
     {
-        $roleClass = app(RoleContract::class);
-
-        $role = $roleClass::create([
+        $role = RoleProxy::create([
             'name' => $this->argument('name'),
             'guard_name' => $this->argument('guard'),
         ]);

@@ -61,6 +61,8 @@ The package contains some migrations that you can run as usual by:
 php artisan migrate
 ```
 
+## Configuration
+
 You can modify the configuration within `app/concord.php`:
 
 ```php
@@ -88,13 +90,13 @@ return [
 ];
 ```
 
-The main difference between this fork and the original Spatie version is
-that models are managed via Concord's
+### Custom Models
+
+The main difference between this fork and the original Spatie version is that models are managed via Concord's
 [model proxies feature](https://konekt.dev/concord/1.x/proxies).
 
-Thus Model classes and table names have been removed from config and have
-been added as Concord models. Thus you can easily replace them in your
-using Concord's facilities:
+Therefore, model classes and table names have been removed from config and have been added as Concord models.
+To use your own custom models, use Concord's facilities:
 
 ```php
 namespace App\Providers;
@@ -115,8 +117,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-If you also want to change the names of the db tables, set the `$table`
-property of the model:
+If you also want to change the names of the db tables, set the `$table` property of the model:
 
 ```php
 namespace App;
@@ -129,9 +130,8 @@ class Role extends BaseRole
 }
 ```
 
-> *Important*: Make sure any custom model class implements its
-> appropriate interface (`Konekt\Acl\Contracts\Role`,
-> `Konekt\Acl\Contracts\Permission`)
+> **Important**: Make sure any custom model class implements its
+> appropriate interface: `Konekt\Acl\Contracts\Role` and `Konekt\Acl\Contracts\Permission`, respectively
 
 ## Usage
 
@@ -149,7 +149,7 @@ class User extends Authenticatable
 }
 ```
 
-> - note that if you need to use `HasRoles` trait with another model ex.`Page` you will also need to add `protected $guard_name = 'web';` as well to that model or you would get an error
+> ⚠ Note that if you need to use `HasRoles` trait with another model ex.`Page` you will also need to add `protected $guard_name = 'web';` as well to that model, otherwise you'll get an error
 >
 >```php
 >use Illuminate\Database\Eloquent\Model;
@@ -165,6 +165,8 @@ class User extends Authenticatable
 >}
 >```
 
+### Roles & Permissions
+
 This package allows for users to be associated with permissions and roles. Every role is associated with multiple permissions.
 A `Role` and a `Permission` are regular Eloquent models. They require a `name` and can be created like this:
 
@@ -176,8 +178,8 @@ $role = Role::create(['name' => 'writer']);
 $permission = Permission::create(['name' => 'edit articles']);
 ```
 
-If you want to use your own models instead of the built in ones, use
-their proxy counterparts instead:
+If you're developing a library, and you want your users to customize the models instead of the built-in ones,
+you can use their proxy counterparts that will forward the calls to the custom models:
 
 ```php
 use Konekt\Acl\Models\RoleProxy;
@@ -188,6 +190,8 @@ $permission = PermissionProxy::create(['name' => 'edit articles']);
 ```
 
 If you're using multiple guards the `guard_name` attribute needs to be set as well. Read about it in the [using multiple guards](#using-multiple-guards) section of the readme.
+
+### Obtaining Permissions
 
 The `HasRoles` trait adds Eloquent relationships to your models, which can be accessed directly or used as a base query:
 
@@ -202,23 +206,28 @@ $permissions = $user->getAllPermissions();
 $roles = $user->getRoleNames(); // Returns a collection
 ```
 
-The `HasRoles` trait also adds a `role` scope to your models to scope the query to certain roles or permissions:
+The `HasRoles` trait also adds a `havingRole` scope to your models to scope the query to certain roles:
 
 ```php
-$users = User::role('writer')->get(); // Returns only users with the role 'writer'
+$users = User::havingRole('writer')->get(); // Returns only users with the role 'writer'
 ```
 
-The `role` scope can accept a string, a `\Spatie\Permission\Models\Role` object or an `\Illuminate\Support\Collection` object.
-
-The same trait also adds a scope to only get users that have a certain permission.
+The `havingRoles` scope allows querying for multiple roles:
 
 ```php
-$users = User::permission('edit articles')->get(); // Returns only users with the permission 'edit articles' (inherited or directly)
+$users = User::havingRoles('writer', 'editor', 'supervisor')->get(); // Returns the users that have at least one of the given roles
 ```
 
-The scope can accept a string, a `\Spatie\Permission\Models\Permission` object or an `\Illuminate\Support\Collection` object.
+The same trait also adds a scope to only get users that have a certain permission(s).
 
-### Using "direct" permissions (see below to use both roles and permissions)
+```php
+$users = User::havingPermission('edit articles')->get(); // Returns only users with the permission 'edit articles' (inherited or directly)
+
+// To find users by multiple permissions:
+$users = User::havingPermissions('edit pages', 'create pages')->get();
+```
+
+### Modifying Permissions
 
 A permission can be given to any user:
 
@@ -238,7 +247,7 @@ $user->revokePermissionTo('edit articles');
 Or revoke & add new permissions in one go:
 
 ```php
-$user->syncPermissions(['edit articles', 'delete articles']);
+$user->syncPermissions('edit articles', 'delete articles'); // Removes any other permissions and assigns the given ones to the user
 ```
 
 You can test if a user has a permission:
@@ -250,7 +259,7 @@ $user->hasPermissionTo('edit articles');
 ...or if a user has multiple permissions:
 
 ```php
-$user->hasAnyPermission(['edit articles', 'publish articles', 'unpublish articles']);
+$user->hasAnyPermission('edit articles', 'publish articles', 'unpublish articles');
 ```
 
 Saved permissions will be registered with the `Illuminate\Auth\Access\Gate` class for the default guard. So you can
@@ -260,7 +269,7 @@ test if a user has a permission with Laravel's default `can` function:
 $user->can('edit articles');
 ```
 
-### Using permissions via roles
+### Using Permissions via Roles
 
 A role can be assigned to any user:
 
@@ -269,8 +278,6 @@ $user->assignRole('writer');
 
 // You can also assign multiple roles at once
 $user->assignRole('writer', 'admin');
-// or as an array
-$user->assignRole(['writer', 'admin']);
 ```
 
 A role can be removed from a user:
@@ -283,7 +290,7 @@ Roles can also be synced:
 
 ```php
 // All current roles will be removed from the user and replaced by the array given
-$user->syncRoles(['writer', 'admin']);
+$user->syncRoles('writer', 'admin');
 ```
 
 You can determine if a user has a certain role:
@@ -295,7 +302,7 @@ $user->hasRole('writer');
 You can also determine if a user has any of a given list of roles:
 
 ```php
-$user->hasAnyRole(RoleProxy::all());
+$user->hasAnyRole(Role::all());
 ```
 
 You can also determine if a user has all of a given list of roles:
@@ -303,9 +310,6 @@ You can also determine if a user has all of a given list of roles:
 ```php
 $user->hasAllRoles(Role::all());
 ```
-
-The `assignRole`, `hasRole`, `hasAnyRole`, `hasAllRoles`  and `removeRole` functions can accept a
- string, a `\Konekt\Acl\Models\Role` object or an `\Illuminate\Support\Collection` object.
 
 A permission can be given to a role:
 
@@ -325,11 +329,10 @@ A permission can be revoked from a role:
 $role->revokePermissionTo('edit articles');
 ```
 
-The `givePermissionTo` and `revokePermissionTo` functions can accept a 
-string or a `Konekt\Acl\Models\Permission` object.
+The `givePermissionTo` and `revokePermissionTo` functions can accept a string or a `Permission` object.
 
-Permissions are inherited from roles automatically.
-Additionally, individual permissions can be assigned to the user too.
+Permissions are inherited from roles automatically. Additionally, individual permissions can be assigned to the user too.
+
 For instance:
 
 ```php
@@ -342,11 +345,14 @@ $user->givePermissionTo('delete articles');
 ```
 
 In the above example, a role is given permission to edit articles and this role is assigned to a user.
-Now the user can edit articles and additionally delete articles. The permission of 'delete articles' is the user's direct permission because it is assigned directly to them.
-When we call `$user->hasDirectPermission('delete articles')` it returns `true`,
-but `false` for `$user->hasDirectPermission('edit articles')`.
 
-This method is useful if one builds a form for setting permissions for roles and users in an application and wants to restrict or change inherited permissions of roles of the user, i.e. allowing to change only direct permissions of the user.
+Now the user can edit articles and additionally delete articles. The permission of 'delete articles' is the user's
+direct permission because it is assigned directly to them.
+
+When we call `$user->hasDirectPermission('delete articles')` it returns `true`, but `false` for `$user->hasDirectPermission('edit articles')`.
+
+This method is useful if one builds a form for setting permissions for roles and users in an application and wants to
+restrict or change inherited permissions of roles of the user, i.e. allowing to change only direct permissions of the user.
 
 You can list all of these permissions:
 
@@ -361,7 +367,7 @@ $user->getPermissionsViaRoles();
 $user->getAllPermissions();
 ```
 
-All these responses are collections of `Konekt\Acl\Models\Permission` objects.
+All these responses are collections of `Permission` objects.
 
 If we follow the previous example, the first response will be a collection with the 'delete article' permission, the 
 second will be a collection with the 'edit article' permission and the third will contain both.
@@ -369,13 +375,16 @@ second will be a collection with the 'edit article' permission and the third wil
 If we follow the previous example, the first response will be a collection with the `delete article` permission and
 the second will be a collection with the `edit article` permission and the third will contain both.
 
-### Using Blade directives
-This package also adds Blade directives to verify whether the currently logged in user has all or any of a given list of roles.
+### Blade Directives
+
+This package also adds Blade directives to verify whether the currently logged-in user has all or any of a given list of roles.
 
 Optionally you can pass in the `guard` that the check will be performed on as a second argument.
 
 #### Blade and Roles
+
 Test for a specific role:
+
 ```blade
 @role('writer')
     I am a writer!
@@ -383,7 +392,9 @@ Test for a specific role:
     I am not a writer...
 @endrole
 ```
+
 is the same as
+
 ```blade
 @hasrole('writer')
     I am a writer!
@@ -393,6 +404,7 @@ is the same as
 ```
 
 Test for any role in a list:
+
 ```blade
 @hasanyrole($collectionOfRoles)
     I have one or more of these roles!
@@ -406,6 +418,7 @@ Test for any role in a list:
     I have none of these roles...
 @endhasanyrole
 ```
+
 Test for all roles:
 
 ```blade
@@ -423,33 +436,39 @@ Test for all roles:
 ```
 
 #### Blade and Permissions
-This package doesn't add any permission-specific Blade directives. Instead, use Laravel's native `@can` directive to check if a user has a certain permission.
+
+This package doesn't add any permission-specific Blade directives. Instead, use Laravel's native `@can` directive to
+check if a user has a certain permission.
 
 ```blade
 @can('edit articles')
   //
 @endcan
 ```
+
 or
+
 ```blade
 @if(auth()->user()->can('edit articles') && $some_other_condition)
   //
 @endif
 ```
 
-## Using multiple guards
+## Multiple Guards
 
 When using the default Laravel auth configuration all of the above methods will work out of the box, no extra configuration required.
 
-However, when using multiple guards they will act like namespaces for your permissions and roles. Meaning every guard has its own set of permissions and roles that can be assigned to their user model.
+However, when using multiple guards they will act like namespaces for your permissions and roles.
+Meaning every guard has its own set of permissions and roles that can be assigned to their user model.
 
-### Using permissions and roles with multiple guards
+### Permissions and Roles with Multiple Guards
 
-By default the default guard (`config('auth.defaults.guard')`) will be used as the guard for new permissions and roles. When creating permissions and roles for specific guards you'll have to specify their `guard_name` on the model:
+By default, the default guard (`config('auth.defaults.guard')`) will be used as the guard for new permissions and roles.
+When creating permissions and roles for specific guards you'll have to specify their `guard_name` on the model:
 
 ```php
 // Create a superadmin role for the admin users
-$role = RoleProxy::create(['guard_name' => 'admin', 'name' => 'superadmin']);
+$role = Role::create(['guard_name' => 'admin', 'name' => 'superadmin']);
 
 // Define a `publish articles` permission for the admin users belonging to the admin guard
 $permission = Permission::create(['guard_name' => 'admin', 'name' => 'publish articles']);
@@ -464,13 +483,16 @@ To check if a user has permission for a specific guard:
 $user->hasPermissionTo('publish articles', 'admin');
 ```
 
-### Assigning permissions and roles to guard users
+### Assigning Permissions and Roles to Guard Users
 
-You can use the same methods to assign permissions and roles to users as described above in [using permissions via roles](#using-permissions-via-roles). Just make sure the `guard_name` on the permission or role matches the guard of the user, otherwise a `GuardDoesNotMatch` exception will be thrown.
+You can use the same methods to assign permissions and roles to users as described above in
+[Using Permissions via Roles](#using-permissions-via-roles). Just make sure the `guard_name` on the permission or role
+matches the guard of the user, otherwise a `GuardDoesNotMatch` exception will be thrown.
 
-### Using blade directives with multiple guards
+### Blade Directives with Multiple Guards
 
-You can use all of the blade directives listed in [using blade directives](#using-blade-directives) by passing in the guard you wish to use as the second argument to the directive:
+You can use all the blade directives listed in [Blade Directives](#blade-directives) by passing in the guard you wish to
+use as the second argument to the directive:
 
 ```blade
 @role('super-admin', 'admin')
@@ -480,7 +502,7 @@ You can use all of the blade directives listed in [using blade directives](#usin
 @endrole
 ```
 
-## Using a middleware
+## Middleware
 
 This package comes with `RoleMiddleware` and `PermissionMiddleware` middleware. You can add them inside your `app/Http/Kernel.php` file.
 
@@ -529,7 +551,7 @@ public function __construct()
 }
 ```
 
-### Catching role and permission failures
+### Catching Role and Permission Failures
 
 If you want to override the default `403` response, you can catch the `UnauthorizedException` using
 your app's exception handler:
@@ -546,7 +568,7 @@ public function render($request, Exception $exception)
 ```
 
 
-## Using artisan commands
+## Artisan Commands
 
 You can create a role or permission from a console with artisan commands.
 
@@ -651,9 +673,10 @@ $permission->removeRole('writer');
 $permission->syncRoles(params);
 ```
 
-HOWEVER, if you manipulate permission/role data directly in the database instead of calling the supplied methods, then you will not see the changes reflected in the application unless you manually reset the cache.
+HOWEVER, if you manipulate permission/role data directly in the database instead of calling the supplied methods, then
+you will not see the changes reflected in the application unless you manually reset the cache.
 
-### Manual cache reset
+### Manual Cache Reset
 
 To manually reset the cache for this package, run:
 ```bash
@@ -672,49 +695,18 @@ from accidentally using/changing your cached data.
 
 ## Need a UI?
 
-The Konekt [AppShell Package](https://github.com/artkonekt/appshell) is an extensible Business Application boilerplate that incorporates this Acl package and contains a UI for managing permissions, roles & users.
-
-This package doesn't come with any screens out of the box. To get started check out [this extensive tutorial](https://scotch.io/tutorials/user-authorization-in-laravel-54-with-spatie-laravel-permission) by [Caleb Oki](http://www.caleboki.com/).
-
+The [AppShell Package](https://konekt.dev/appshell) is an extensible Business Application boilerplate that incorporates
+this Acl package and contains a UI for managing permissions, roles & users.
 
 ## Changelog
 
 Please see [Changelog](Changelog.md) for more information what has changed recently.
 
-## Testing
-
-``` bash
-composer test
-```
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Postcardware
-
-You're free to use this package (it's [MIT-licensed](LICENSE.md)), but if it makes it to your production environment Spatie will highly appreciate you send them a postcard from your hometown, mentioning which of their package(s) you are using.
-
-Their address is: Spatie, Samberstraat 69D, 2060 Antwerp, Belgium.
-
-All received postcards are published [on spatie.be](https://spatie.be/en/opensource/postcards).
-
-
 ## Credits
-
-- [Attila Fulop](https://github.com/fulopattila122)
-- [Freek Van der Herten](https://github.com/freekmurze)
-- [All Contributors](../../contributors)
 
 This package is a modified variant of [Spatie Permission package](https://github.com/spatie/laravel-permission) which is heavily based on [Jeffrey Way](https://twitter.com/jeffrey_way)'s awesome [Laracasts](https://laracasts.com) lessons
 on [permissions and roles](https://laracasts.com/series/whats-new-in-laravel-5-1/episodes/16). His original code
 can be found [in this repo on GitHub](https://github.com/laracasts/laravel-5-roles-and-permissions-demo).
-
-Special thanks to [Alex Vanderbist](https://github.com/AlexVanderbist) who greatly helped with Spatie/Permission `v2`.
-
-## Resources
-
-- [How to create a UI for managing the permissions and roles](http://www.qcode.in/easy-roles-and-permissions-in-laravel-5-4/)
 
 ## Alternatives
 

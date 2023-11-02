@@ -187,7 +187,7 @@ trait HasRoles
      */
     public function hasAllRoles(string|array|Role|Collection $roles): bool
     {
-        if (is_string($roles) && false !== strpos($roles, '|')) {
+        if (is_string($roles) && str_contains($roles, '|')) {
             $roles = $this->convertPipeToArray($roles);
         }
 

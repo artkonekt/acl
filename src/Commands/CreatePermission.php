@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Konekt\Acl\Commands;
 
 use Illuminate\Console\Command;
-use Konekt\Acl\Contracts\Permission as PermissionContract;
+use Konekt\Acl\Models\PermissionProxy;
 
 class CreatePermission extends Command
 {
@@ -17,9 +17,7 @@ class CreatePermission extends Command
 
     public function handle()
     {
-        $permissionClass = app(PermissionContract::class);
-
-        $permission = $permissionClass::create([
+        $permission = PermissionProxy::create([
             'name' => $this->argument('name'),
             'guard_name' => $this->argument('guard'),
         ]);
