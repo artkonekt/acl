@@ -140,7 +140,7 @@ class HasPermissionsTest extends TestCase
 
         $this->assertEquals(2, $this->testUserRole->permissions()->count());
 
-        $this->testUserRole->revokePermissionTo(['edit-articles', 'edit-news']);
+        $this->testUserRole->revokePermissionTo('edit-articles', 'edit-news');
 
         $this->assertEquals(0, $this->testUserRole->permissions()->count());
     }

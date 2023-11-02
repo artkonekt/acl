@@ -15,4 +15,6 @@ interface Role
     public static function findById(int $id, ?string $guardName = null): ?self;
 
     public function hasPermissionTo(string|Permission $permission): bool;
+
+    public function getName(): string;
 }

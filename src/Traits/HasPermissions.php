@@ -14,13 +14,6 @@ use Konekt\Acl\PermissionRegistrar;
 
 trait HasPermissions
 {
-    /**
-     * Grant the given permission(s) to a role.
-     *
-     * @param string|array|Permission|\Illuminate\Support\Collection $permissions
-     *
-     * @return $this
-     */
     public function givePermissionTo(string|Permission ...$permissions): static
     {
         $normalized = [];
@@ -50,16 +43,9 @@ trait HasPermissions
         return $this->givePermissionTo(...$permissions);
     }
 
-    /**
-     * Revoke the given permission.
-     *
-     * @param Permission|Permission[]|string|string[] $permission
-     *
-     * @return $this
-     */
-    public function revokePermissionTo($permission): static
+    public function revokePermissionTo(string|Permission ...$permissions): static
     {
-        $this->permissions()->detach($this->getStoredPermission($permission));
+        $this->permissions()->detach($this->getStoredPermissions(...$permissions));
 
         $this->forgetCachedPermissions();
 
@@ -74,24 +60,19 @@ trait HasPermissions
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    /**
-     * @param string|array|Permission|\Illuminate\Support\Collection $permissions
-     *
-     * @return Permission|Permission|\Illuminate\Support\Collection
-     */
-    protected function getStoredPermission($permissions)
+    protected function getStoredPermission(string|Permission $permission)
     {
-        if (is_string($permissions)) {
-            return PermissionProxy::findByName($permissions, $this->getDefaultGuardName());
-        }
+        return is_string($permission) ?
+            PermissionProxy::findByName($permission, $this->getDefaultGuardName())
+            :
+            $permission;
+    }
 
-        if (is_array($permissions)) {
-            return PermissionProxy::whereIn('name', $permissions)
+    protected function getStoredPermissions(string|Permission ...$permissions): Collection
+    {
+        return PermissionProxy::whereIn('name', array_map(fn ($p) => $p instanceof Permission ? $p->getName() : $p, $permissions))
                 ->whereIn('guard_name', $this->getGuardNames())
                 ->get();
-        }
-
-        return $permissions;
     }
 
     /**

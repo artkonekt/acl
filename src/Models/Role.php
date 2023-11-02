@@ -16,6 +16,9 @@ use Konekt\Acl\Guard;
 use Konekt\Acl\Traits\HasPermissions;
 use Konekt\Acl\Traits\RefreshesPermissionCache;
 
+/**
+ * @property string $name
+ */
 class Role extends Model implements RoleContract
 {
     use HasPermissions;
@@ -93,5 +96,10 @@ class Role extends Model implements RoleContract
         }
 
         return $this->permissions->contains('id', $permission->id);
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

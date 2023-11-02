@@ -15,6 +15,9 @@ use Konekt\Acl\PermissionRegistrar;
 use Konekt\Acl\Traits\HasRoles;
 use Konekt\Acl\Traits\RefreshesPermissionCache;
 
+/**
+ * @property string $name
+ */
 class Permission extends Model implements PermissionContract
 {
     use HasRoles;
@@ -78,6 +81,11 @@ class Permission extends Model implements PermissionContract
         }
 
         return $permission;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**

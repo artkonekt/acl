@@ -10,5 +10,7 @@ interface Permission
 {
     public function roles(): BelongsToMany;
 
+    public function getName(): string;
+
     public static function findByName(string $name, ?string $guardName = null): ?self;
 }

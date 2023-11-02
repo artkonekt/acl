@@ -14,6 +14,7 @@
 - BC: The `HasRoles::permission()` query scope has been renamed to `havingPermissions()`
 - BC: The renamed `havingPermissions()` scope no longer accepts and array or Collection, only a variadic `string|Permission` parameter list
 - BC: The `HasRoles::role()` query scope has been renamed to `havingRoles()`
+- BC: Added the `getName()` method to the `Permission` and `Role` interfaces
 
 # 1.x Series
 
