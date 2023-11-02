@@ -1,9 +1,12 @@
 # Concord (Laravel) Module For Handling Permissions And Roles
 
-> This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission).
-> Reason for fork was to convert the package into a [Concord compliant](https://github.com/artkonekt/concord) module.
->
-> **v1.0**: Most of the changes have been ported from Spatie v2.9.0
+### Pacakge Origins
+
+This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission).
+Reason for the fork was to convert the package into a [Concord compliant](https://konekt.dev/concord) module.
+As of **v1.0**: most of the changes have been ported from Spatie v2.9.0
+Beginning with **v2.0**, this package no longer maintains compatibility and feature parity with the Spatie Permission package.
+The most important feature of v2 is the possibility of sharing Eloquent models with users.
 
 [![Tests](https://img.shields.io/github/actions/workflow/status/artkonekt/acl/tests.yml?branch=master&style=flat-square)](https://github.com/artkonekt/acl/actions?query=workflow%3Atests)
 [![Packagist version](https://img.shields.io/packagist/v/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
@@ -37,8 +40,6 @@ The original author of this package is Spatie, a webdesign agency in Antwerp, Be
 their open source projects [on their website](https://spatie.be/opensource).
 
 ## Installation
-
-This version of the package is intended ton be used as a [Concord module](https://github.com/artkonekt/concord/blob/master/docs/modules.md) in Laravel 5.4 or higher. If you don't use Concord take a look at [the original Spatie package](https://github.com/spatie/laravel-permission).
 
 You can install the package via composer:
 
@@ -90,7 +91,7 @@ return [
 
 The main difference between this fork and the original Spatie version is
 that models are managed via Concord's
-[model proxies feature](https://artkonekt.github.io/concord/#/proxies).
+[model proxies feature](https://konekt.dev/concord/1.x/proxies).
 
 Thus Model classes and table names have been removed from config and have
 been added as Concord models. Thus you can easily replace them in your

@@ -1,9 +1,10 @@
 {
     "name": "konekt/acl",
-    "description": "Concord Module for Permission handling (Laravel 9 - 10)",
+    "description": "Concord Module for Permission handling (Laravel 10)",
     "keywords": [
-        "spatie",
         "laravel",
+        "eloquent",
+        "sharing",
         "permission",
         "acl",
         "security",
@@ -25,16 +26,16 @@
         }
     ],
     "require": {
-        "php" : "^8.0",
-        "illuminate/auth": "^9.2|^10.0",
-        "illuminate/container": "^9.2|^10.0",
-        "illuminate/contracts": "^9.2|^10.0",
-        "illuminate/database": "^9.2|^10.0",
-        "konekt/concord": "^1.10.2"
+        "php" : "^8.2",
+        "illuminate/auth": "^10.0",
+        "illuminate/container": "^10.0",
+        "illuminate/contracts": "^10.0",
+        "illuminate/database": "^10.0",
+        "konekt/concord": "^1.13.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0|^8.0",
-        "phpunit/phpunit" : "9 - 10"
+        "orchestra/testbench": "^8.0",
+        "phpunit/phpunit" : "^10.0"
     },
     "autoload": {
         "psr-4": {
@@ -54,5 +55,10 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
     }
 }

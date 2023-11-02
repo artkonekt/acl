@@ -1,5 +1,11 @@
 # Konekt Acl Changelog
 
+# 2.x Series
+
+- Dropped Laravel 9 support
+- Dropped PHP 8.0 & 8.1 support
+- Added PHP 8.3 support
+
 # 1.x Series
 
 ## 1.7.0
