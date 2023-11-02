@@ -1,13 +1,5 @@
 # Concord (Laravel) Module For Handling Permissions And Roles
 
-### Pacakge Origins
-
-This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission).
-Reason for the fork was to convert the package into a [Concord compliant](https://konekt.dev/concord) module.
-As of **v1.0**: most of the changes have been ported from Spatie v2.9.0
-Beginning with **v2.0**, this package no longer maintains compatibility and feature parity with the Spatie Permission package.
-The most important feature of v2 is the possibility of sharing Eloquent models with users.
-
 [![Tests](https://img.shields.io/github/actions/workflow/status/artkonekt/acl/tests.yml?branch=master&style=flat-square)](https://github.com/artkonekt/acl/actions?query=workflow%3Atests)
 [![Packagist version](https://img.shields.io/packagist/v/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
 [![Packagist downloads](https://img.shields.io/packagist/dt/konekt/acl.svg?style=flat-square)](https://packagist.org/packages/konekt/acl)
@@ -15,6 +7,8 @@ The most important feature of v2 is the possibility of sharing Eloquent models w
 [![MIT Software License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.md)
 
 This package allows you to manage user permissions and roles in a database.
+
+## Intro
 
 Once installed you can do stuff like this:
 
@@ -36,8 +30,13 @@ Because all permissions will be registered on [Laravel's gate](https://laravel.c
 $user->can('edit articles');
 ```
 
-The original author of this package is Spatie, a webdesign agency in Antwerp, Belgium. You'll find an overview of all
-their open source projects [on their website](https://spatie.be/opensource).
+### Package Origins
+
+- This package is a fork of [Spatie's Permission v2.1.5](https://github.com/spatie/laravel-permission).
+- Reason for the fork was to convert the package into a [Concord compliant](https://konekt.dev/concord) module.
+- As of **v1.0**: most of the changes have been ported from Spatie v2.9.0
+- Beginning with **v2.0**, this package no longer maintains compatibility and feature parity with the Spatie Permission package.
+- The most important feature of v2 is the possibility of _Sharing Eloquent models_ across users.
 
 ## Installation
 
