@@ -712,8 +712,6 @@ can be found [in this repo on GitHub](https://github.com/laracasts/laravel-5-rol
 
 - [spatie/laravel-permission](https://github.com/spatie/laravel-permission)
 - [JosephSilber/bouncer](https://github.com/JosephSilber/bouncer)
-- [Zizaco/entrust](https://github.com/Zizaco/entrust)
-- [bican/roles](https://github.com/romanbican/roles)
 
 ## License
 
