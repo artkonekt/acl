@@ -31,6 +31,8 @@ $user->givePermissionTo('edit users', 'create users');
 $user->givePermissionTo(...Permission::where('name', 'like', '% invoices')->get()->all());
 ```
 
+Similarly, the `assignRoles()` and `syncRoles()` methods only accept variadic `string|int|Role ...$roles` argument(s).
+
 ### Renamed Methods and Scopes
 
 - The `HasRoles::permission()` query scope has been renamed to `havingPermissions()`
