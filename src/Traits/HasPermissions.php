@@ -39,6 +39,9 @@ trait HasPermissions
      */
     public function syncPermissions(...$permissions): static
     {
+        if (1 === func_num_args() && is_array($permissions[0])) {
+            $permissions = $permissions[0];
+        }
         $this->permissions()->detach();
 
         return $this->givePermissionTo(...$permissions);

@@ -102,6 +102,15 @@ class RoleTest extends TestCase
     }
 
     /** @test */
+    public function it_can_sync_permissions_using_an_array()
+    {
+        $this->testUserRole->syncPermissions(['edit-articles', 'edit-news']);
+
+        $this->assertTrue($this->testUserRole->hasPermissionTo('edit-articles'));
+        $this->assertTrue($this->testUserRole->hasPermissionTo('edit-news'));
+    }
+
+    /** @test */
     public function it_throws_an_exception_when_syncing_permissions_that_do_not_exist()
     {
         $this->testUserRole->givePermissionTo('edit-articles');
