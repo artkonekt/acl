@@ -14,7 +14,7 @@ The `Permission::findByName()`, `Role::findByName()` and the `Role::findById()` 
 when no result was not found, but return `NULL` instead. If your code relies on catching those exceptions and/or assuming
 that the return value is always an object, then the logic needs to be adjusted according to the new behavior.
 
-### No More Collections
+### Typed Arguments Only
 
 The `givePermissionTo()` method (from the `HasPermissions` trait) no longer accepts an array or a Collection parameter,
 only a variadic `string|Permission` parameters.
