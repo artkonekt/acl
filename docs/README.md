@@ -21,8 +21,7 @@ ACL is a Laravel package to manage user permissions and roles in a database.
 
 ## Changelog
 
-See the [Changelog](https://github.com/artkonekt/acl/Changelog.md) for more information about what has changed recently.
-
+See the [Changelog](https://github.com/artkonekt/acl/blob/master/Changelog.md) for more information about what has changed recently.
 
 ---
 
