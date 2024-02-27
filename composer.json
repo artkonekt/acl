@@ -26,15 +26,15 @@
     ],
     "require": {
         "php" : "^8.0",
-        "illuminate/auth": "^9.2|^10.0",
-        "illuminate/container": "^9.2|^10.0",
-        "illuminate/contracts": "^9.2|^10.0",
-        "illuminate/database": "^9.2|^10.0",
-        "konekt/concord": "^1.10.2"
+        "illuminate/auth": "^10.0|^11.0",
+        "illuminate/container": "^10.0|^11.0",
+        "illuminate/contracts": "^10.0|^11.0",
+        "illuminate/database": "^10.0|^11.0",
+        "konekt/concord": "^1.13"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0|^8.0",
-        "phpunit/phpunit" : "9 - 10"
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit" : "^10.0"
     },
     "autoload": {
         "psr-4": {
