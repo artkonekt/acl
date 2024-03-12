@@ -13,6 +13,8 @@
     ],
     "homepage": "https://github.com/artkonekt/acl",
     "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Freek Van der Herten",
@@ -27,14 +29,14 @@
     ],
     "require": {
         "php" : "^8.2",
-        "illuminate/auth": "^10.0",
-        "illuminate/container": "^10.0",
-        "illuminate/contracts": "^10.0",
-        "illuminate/database": "^10.0",
-        "konekt/concord": "^1.13.0"
+        "illuminate/auth": "^10.0|^11.0",
+        "illuminate/container": "^10.0|^11.0",
+        "illuminate/contracts": "^10.0|^11.0",
+        "illuminate/database": "^10.0|^11.0",
+        "konekt/concord": "^1.13"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0",
+        "orchestra/testbench": "^8.0|^9.0",
         "phpunit/phpunit" : "^10.0"
     },
     "autoload": {

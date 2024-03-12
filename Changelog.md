@@ -19,6 +19,18 @@
 
 # 1.x Series
 
+## 1.8.0
+##### 2024-02-17
+
+- Dropped Laravel 9 support
+- Dropped PHP 8.0 support
+- Added Laravel 11 support
+
+## 1.7.1
+##### 2023-11-17
+
+- Added PHP 8.3 support
+
 ## 1.7.0
 ##### 2023-02-17
 
