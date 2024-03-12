@@ -9,10 +9,10 @@ jobs:
     strategy:
       matrix:
         php: ['8.1', '8.2', '8.3']
-        laravel: ['10.0', '10.46', '11.x']
+        laravel: ['10.0', '10.48', '11.0']
         exclude:
           - php: '8.1'
-            laravel: '11.x'
+            laravel: '11.0'
     name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }}
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@master
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, json, sqlite3
+          extensions: mbstring, json, sqlite3K
           tools: composer:v2
       - name: Lock Laravel Version
         run: composer require "illuminate/support:${{ matrix.laravel }}.*" --no-update -v && composer require "illuminate/console:${{ matrix.laravel }}.*" --no-update -v
