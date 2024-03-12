@@ -1,6 +1,6 @@
 {
     "name": "konekt/acl",
-    "description": "Concord Module for Permission handling (Laravel 9 - 10)",
+    "description": "Concord Module for Permission handling (Laravel 9 - 11)",
     "keywords": ["spatie", "laravel", "permission", "acl", "security", "konekt", "concord"],
     "homepage": "https://github.com/artkonekt/acl",
     "license": "MIT",
