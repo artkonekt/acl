@@ -20,7 +20,7 @@ class Guard
             $guardName = $model->guard_name ?? null;
         }
 
-        if (! isset($guardName)) {
+        if (!isset($guardName)) {
             $class = is_object($model) ? get_class($model) : $model;
 
             $guardName = (new \ReflectionClass($class))->getDefaultProperties()['guard_name'] ?? null;
@@ -32,7 +32,7 @@ class Guard
 
         return collect(config('auth.guards'))
             ->map(function ($guard) {
-                if (! isset($guard['provider'])) {
+                if (!isset($guard['provider'])) {
                     return;
                 }
 

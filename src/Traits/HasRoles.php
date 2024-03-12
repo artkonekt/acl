@@ -31,7 +31,7 @@ trait HasRoles
     public static function bootHasRoles(): void
     {
         static::deleting(function ($model) {
-            if (method_exists($model, 'isForceDeleting') && ! $model->isForceDeleting()) {
+            if (method_exists($model, 'isForceDeleting') && !$model->isForceDeleting()) {
                 return;
             }
             $model->roles()->detach();
@@ -252,7 +252,7 @@ trait HasRoles
         if (is_string($permission)) {
             $permission = PermissionProxy::findByName($permission, $this->getDefaultGuardName());
 
-            if (! $permission) {
+            if (!$permission) {
                 return false;
             }
         }
@@ -347,7 +347,7 @@ trait HasRoles
             return explode('|', $pipeString);
         }
 
-        if (! in_array($quoteCharacter, ["'", '"'])) {
+        if (!in_array($quoteCharacter, ["'", '"'])) {
             return explode('|', $pipeString);
         }
 

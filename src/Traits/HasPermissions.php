@@ -81,7 +81,7 @@ trait HasPermissions
      */
     protected function ensureModelSharesGuard(Role|Permission $roleOrPermission): void
     {
-        if (! $this->getGuardNames()->contains($roleOrPermission->guard_name)) {
+        if (!$this->getGuardNames()->contains($roleOrPermission->guard_name)) {
             throw GuardDoesNotMatch::create($roleOrPermission->guard_name, $this->getGuardNames());
         }
     }
