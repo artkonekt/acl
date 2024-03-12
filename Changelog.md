@@ -2,9 +2,7 @@
 
 # 2.x Series
 
-- Dropped Laravel 9 support
-- Dropped PHP 8.0 & 8.1 support
-- Added PHP 8.3 support
+- Dropped PHP 8.1 support
 - Added the `Ownable` interface to be used by Models
 - Added the `HasRoles::havingPermission()` query scope that accept a single `string|Permission` parameter
 - Added the `HasRoles::havingRole()` query scope that accept a single `string|Role` parameter

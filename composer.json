@@ -1,6 +1,6 @@
 {
     "name": "konekt/acl",
-    "description": "Concord Module for Permission handling (Laravel 10)",
+    "description": "Concord Module for Permission handling (Laravel 10 - 11)",
     "keywords": [
         "laravel",
         "eloquent",
