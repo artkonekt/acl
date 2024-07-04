@@ -1,6 +1,7 @@
 # Konekt Acl Changelog
 
-# 2.x Series
+## 2.0.0
+##### 2024-02-17
 
 - Dropped PHP 8.1 support
 - Added the `Ownable` interface to be used by Models
