@@ -1,5 +1,11 @@
 # Konekt Acl Changelog
 
+## Unreleased
+##### 2025-XX-YY
+
+- Added Laravel 12 support
+- Added PHP 8.4 support
+
 ## 2.0.0
 ##### 2024-02-17
 
