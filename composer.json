@@ -1,6 +1,6 @@
 {
     "name": "konekt/acl",
-    "description": "Concord Module for Permission handling (Laravel 10 - 12)",
+    "description": "Concord Module for Permission handling (Laravel 11 - 13)",
     "keywords": [
         "laravel",
         "eloquent",
@@ -28,15 +28,15 @@
         }
     ],
     "require": {
-        "php" : "^8.2",
-        "illuminate/auth": "^10.0|^11.0|^12.0",
-        "illuminate/container": "^10.0|^11.0|^12.0",
-        "illuminate/contracts": "^10.0|^11.0|^12.0",
-        "illuminate/database": "^10.0|^11.0|^12.0",
-        "konekt/concord": "^1.13"
+        "php" : "^8.3",
+        "illuminate/auth": "^11.46.2|^12.50|^13.0",
+        "illuminate/container": "^11.46.2|^12.50|^13.0",
+        "illuminate/contracts": "^11.46.2|^12.50|^13.0",
+        "illuminate/database": "^11.46.2|^12.50|^13.0",
+        "konekt/concord": "^1.14"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
         "phpunit/phpunit" : "^10.0|^11.0"
     },
     "autoload": {
